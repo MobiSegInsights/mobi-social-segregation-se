@@ -1,6 +1,7 @@
 .DS_Store
 .idea
 dbs
+legacy
 *.pyc
 .ipynb_checkpoints
 .Rhistory

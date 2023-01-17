@@ -5,3 +5,5 @@ legacy
 *.pyc
 .ipynb_checkpoints
 .Rhistory
+.Rproj.user
+apps

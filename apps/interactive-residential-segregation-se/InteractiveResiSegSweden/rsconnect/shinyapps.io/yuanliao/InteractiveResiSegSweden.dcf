@@ -1,0 +1,13 @@
+name: InteractiveResiSegSweden
+title: InteractiveResiSegSweden
+username:
+account: yuanliao
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 8055971
+bundleId: 6744414
+url: https://yuanliao.shinyapps.io/InteractiveResiSegSweden/
+when: 1673984061.79961
+lastSyncTime: 1673984061.79961
+asMultiple: FALSE
+asStatic: FALSE

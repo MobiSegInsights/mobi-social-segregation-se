@@ -7,6 +7,8 @@ library(ggsn)
 library(mapdeck)
 
 zones <- st_transform(st_read('InteractiveResiSegSweden/data/resi_segregation.shp'), crs = 4326)
+zones <- zones %>%
+  filter(deso_3 %in% c('14', '12', '01'))
 col2plot <- 'S_inc'
 zones2plot <- zones %>% select(col2plot) %>% rename(var=col2plot)
 bins <- c(seq(min(zones2plot$var), max(zones2plot$var), 0.1), max(zones2plot$var))

@@ -8,22 +8,17 @@
 #
 
 library(shiny)
-library(leaflet)
-library(dplyr)
-library(sf)
-library(ggplot2)
-library(ggmap)
-library(ggsn)
 library(mapdeck)
+library(sf)
+library(dplyr)
 
-
-# Define UI for application that draws a histogram
+# Define UI for application that shows social segregation metrics on the map
 fluidPage(
 
     # Application title
     titlePanel("Residential social segregation in Sweden (2019)"),
     
-    # Sidebar with a slider input for number of bins
+    # Sidebar with two radio buttons selecting metrics to show
     sidebarLayout(
         sidebarPanel(
             radioButtons("aspect", h4("Please select the segregation type:"),
@@ -35,7 +30,7 @@ fluidPage(
                          choices = list("Evenness" = 'evenness',
                                         'Exposure' = 'isolation'), 
                          selected = "evenness"),
-            submitButton("Map it!"),
+            actionButton("execute", "Map it"),
             p(),
             p("Author: ",
               a("Yuan Liao", 
@@ -51,7 +46,7 @@ fluidPage(
             
             textOutput("selected_type"),
             
-            mapdeckOutput("segPlot", height = "800px", width="100%"),
+            mapdeckOutput("segPlot", height = "600px", width="100%"),
             
             p("Data source: Statistics Sweden (SCB).",
               a("DeSO – Demografiska statistikområden", 

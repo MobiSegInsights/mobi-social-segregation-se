@@ -8,11 +8,18 @@
 #
 
 library(shiny)
+library(mapdeck)
+library(sf)
+library(dplyr)
+
+
 options(scipen = 0)
 # Define server logic required to draw a histogram
 function(input, output, session) {
 
     zones <- st_transform(st_read('data/resi_segregation.shp'), crs = 4326)
+    zones <- zones %>%
+        filter(deso_3 %in% c('14', '12', '01'))
     
     layer <- reactive({
         # Subsetting data based on input$mode and input$hour from ui.R
@@ -47,17 +54,23 @@ function(input, output, session) {
         mapdeck(token = key, location = c(11.974116, 57.690063)
                 , zoom = 14
                 , style = mapdeck_style("street")
-            ) %>%
+            )
+            
+    })
+    
+    ## use an observer to add and remove layers
+    observeEvent(input$execute, {
+            mapdeck_update(map_id = "segPlot") %>%
+            clear_polygon(layer_id = "seg") %>%
             add_polygon(
                 data = zones
-                , layer = "polygon_layer"
+                , layer_id = 'seg'
                 , fill_colour = layer()
                 , legend = TRUE
                 , legend_options = list(digits = 5)
                 , fill_opacity = 200
                 , update_view = F
             )
-        
     })
 
 }

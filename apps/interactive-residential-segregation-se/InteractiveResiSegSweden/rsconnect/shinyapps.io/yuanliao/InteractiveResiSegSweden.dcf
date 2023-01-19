@@ -5,9 +5,9 @@ account: yuanliao
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 8055971
-bundleId: 6744414
+bundleId: 6747750
 url: https://yuanliao.shinyapps.io/InteractiveResiSegSweden/
-when: 1673984061.79961
-lastSyncTime: 1673984061.79961
+when: 1674054780.95185
+lastSyncTime: 1674054780.95185
 asMultiple: FALSE
 asStatic: FALSE

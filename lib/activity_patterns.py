@@ -45,24 +45,7 @@ class ActivityPatterns:
             sql="""SELECT uid, location_method, "TimeLocal", "leaving_TimeLocal", date, dur, month, cluster FROM 
             stops_subset;""",
             con=engine)
-        # Add start time hour and duration in minute
-        self.data.loc[:, 'h_s'] = self.data.loc[:, 'TimeLocal'].apply(lambda x: x.hour * 60 + x.minute)
-        self.data.loc[:, 'dur'] = self.data.loc[:, 'dur'] / 60
-        # Mark holiday season boundaries
-        summer_start = datetime.strptime("2019-06-23 00:00:00", "%Y-%m-%d %H:%M:%S")
-        summer_end = datetime.strptime("2019-08-11 00:00:00", "%Y-%m-%d %H:%M:%S")
-        christmas_start = datetime.strptime("2019-12-22 00:00:00", "%Y-%m-%d %H:%M:%S")
-
-        def holiday(x, s1, s2, s3):
-            if (s1 < x < s2) | (x > s3):
-                return 1
-            else:
-                return 0
-
-        # Add holiday season label
-        tqdm.pandas()
-        self.data.loc[:, 'holiday'] = self.data.loc[:, 'TimeLocal'].progress_apply(
-            lambda x: holiday(x, summer_start, summer_end, christmas_start))
+        self.data = preprocess.mobi_data_time_enrich(self.data)
 
     def aggregate_activity_temporal(self):
         # All records of stays
@@ -77,23 +60,8 @@ class ActivityPatterns:
         return pd.concat([df_all, df_holidays, df_nholidays])
 
     def add_weight2records(self):
-        def record_weights(data):
-            # Get weights
-            recs = list(data[['h_s', 'dur']].to_records(index=False))
-            df_tp = preprocess.cluster_tempo(temps=recs, prt=False)
-            df_tp.loc[:, 'wt'] = df_tp.loc[:, 'freq'].apply(lambda x: 1 / x if x != 0 else 0)
-            wt = df_tp.loc[:, 'wt'].values.reshape((48, 1))
-
-            # Assign weights to each location
-            def row_weight_assign(row):
-                start_ = int(np.floor(row['h_s'] / 30))
-                end_ = int(np.floor((row['h_s'] + int(row['dur'])) / 30))
-                return np.sum(wt[start_:end_ + 1, 0])
-
-            data.loc[:, 'wt'] = data.apply(lambda row: row_weight_assign(row), axis=1)
-            return data
         tqdm.pandas()
-        self.data = self.data.groupby('uid').progress_apply(record_weights).reset_index(drop=True)
+        self.data = self.data.groupby('uid').progress_apply(preprocess.record_weights).reset_index(drop=True)
 
     def cluster_stats(self, top_n=3):
         def cluster_attrs(data):

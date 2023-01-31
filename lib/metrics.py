@@ -5,7 +5,6 @@ import sqlalchemy
 import pandas as pd
 import numpy as np
 import geopandas as gpd
-import weighted
 import skmob
 from skmob.measures.individual import radius_of_gyration, distance_straight_line, number_of_locations, number_of_visits
 from tqdm import tqdm
@@ -102,8 +101,6 @@ class MobilitySegregationPlace(MobilityMeasuresIndividual):
         print('Loading hexagons...')
         self.hexagons = gpd.GeoDataFrame.from_postgis(sql="""SELECT hex_id, geom FROM hexagons;""", con=engine)
         print(f"Number of hexagons: {len(self.hexagons)}")
-        print('Loading individual mobility metrics and segregation measuring by housing...')
-        self.mobi_metrics = pd.read_sql(sql='''SELECT * FROM segregation.indi_mobi_resi_seg_metrics;''', con=engine)
 
     def mobi_data_processing(self):
         # Add time-related columns (h_s, dur, holiday). weekday
@@ -167,43 +164,8 @@ class MobilitySegregationPlace(MobilityMeasuresIndividual):
         self.mobi_data = pd.concat(restl)
         self.mobi_data = self.mobi_data.drop(columns=['gp'])
 
-    def aggregating_metrics(self, test=False):
-        def unit_weighted_median(data):
-            hex_id_ = data.hex_id.values[0]
-            #weekday_ = data['weekday'].values[0]
-            #holiday_ = data.holiday.values[0]
-            #time_seq_ = data.time_seq.values[0]
-            # Visiting strength measure
-            num_visits, num_visits_wt = len(data), data.wt_total.sum()
-            num_unique_uid, num_pop = data.uid.nunique(), data.wt_p.sum()
-            metrics_dict = dict(hex_id=hex_id_,
-                                num_visits=num_visits,
-                                num_visits_wt=num_visits_wt,
-                                num_unique_uid=num_unique_uid,
-                                num_pop=num_pop)
-            # Mobility patterns and segregation measures
-            df_indi_metrics = self.mobi_metrics.loc[self.mobi_metrics.uid.isin(data.uid.unique()), :]
-            data_ = pd.merge(data, df_indi_metrics, on='uid', how='left')
-            cols = ['number_of_locations', 'number_of_visits',
-                    'average_displacement', 'radius_of_gyration',
-                    'median_distance_from_home', 'S_income', 'iso_income',
-                    'S_birth_region', 'iso_birth_region', 'S_background', 'iso_background',
-                    'Foreign background', 'Not Sweden', 'Lowest income group']
-            for v in cols:
-                metrics_dict[v] = weighted.median(data_[v], data_['wt_total'])
-            return pd.Series(metrics_dict)
-        print('Calculate metrics of each spatiotemporal unit')
-
-        def by_hexagon(data):
-            df = data.groupby(['weekday', 'holiday', 'time_seq']).apply(unit_weighted_median).reset_index()
-            return df
-        if not test:
-            restl = p_map(by_hexagon, [g for _, g in self.mobi_data.groupby('hex_id', group_keys=True)])
-        else:
-            restl = p_map(by_hexagon, [g for _, g in self.mobi_data.sample(100).groupby('hex_id', group_keys=True)])
-        df_agg = pd.DataFrame(restl)
+        print('Save the data...')
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
-        print("Saving mobility-aware data...")
-        df_agg.to_sql('mobi_seg_hexagons', engine, schema='segregation', index=False,
-                      method='multi', if_exists='replace', chunksize=10000)
+        self.mobi_data.to_sql('mobi_seg_hexagons_raw', engine, schema='segregation', index=False,
+                  method='multi', if_exists='append', chunksize=10000)

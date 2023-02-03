@@ -3,7 +3,6 @@ import subprocess
 import os
 import pandas as pd
 import sqlalchemy
-import gc
 import weighted
 import numpy as np
 from p_tqdm import p_map

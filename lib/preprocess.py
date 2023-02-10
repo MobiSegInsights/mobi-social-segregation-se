@@ -102,7 +102,7 @@ def raw2chunk2db(file, user, password, port, db_name, table_name, schema_name, f
     return df
 
 
-def osm_net_retrieve(bbox, network_type, folder='dbs\\geo'):
+def osm_net_retrieve(bbox, network_type, folder='dbs\\geo', region=None):
     """
     Save two formats of network downloaded from OpenStreetMap (.graphml & .shp)
     :param folder: where to save the downloaded data
@@ -113,7 +113,7 @@ def osm_net_retrieve(bbox, network_type, folder='dbs\\geo'):
     """
     north, south, east, west = bbox
     G = ox.graph_from_bbox(north, south, east, west, network_type=network_type)
-    ox.save_graphml(G,  filepath=os.path.join(ROOT_dir, folder, network_type + '_network.graphml'))
+    ox.save_graphml(G, filepath=os.path.join(ROOT_dir, folder, network_type + f'_network_{region}.graphml'))
     gdf = ox.graph_to_gdfs(G)
     edge = gdf[1]
     edge = edge.loc[:, ['geometry', 'highway', 'junction', 'length', 'maxspeed', 'name', 'oneway',
@@ -125,7 +125,7 @@ def osm_net_retrieve(bbox, network_type, folder='dbs\\geo'):
     for f in fields:
         df_inter[f] = edge[f].astype(str)
     gdf_edge = gpd.GeoDataFrame(df_inter, geometry=edge["geometry"])
-    gdf_edge.to_file(os.path.join(ROOT_dir, folder, network_type + '_network.shp'))
+    gdf_edge.to_file(os.path.join(ROOT_dir, folder, network_type + f'_network_{region}.shp'))
 
 
 def dump2db_df(df, user, password, port, db_name, table_name, schema_name):

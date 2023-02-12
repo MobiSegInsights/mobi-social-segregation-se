@@ -47,8 +47,8 @@ class MobiSegAggregation:
     def aggregating_metrics(self):
         cols = ['number_of_locations', 'number_of_visits',
                 'average_displacement', 'radius_of_gyration',
-                'median_distance_from_home', 'S_income', 'iso_income',
-                'S_birth_region', 'iso_birth_region', 'S_background', 'iso_background',
+                'median_distance_from_home', 'evenness_income', 'iso_income',
+                'evenness_birth_region', 'iso_birth_region', 'evenness_background', 'iso_background',
                 'Foreign background', 'Not Sweden', 'Lowest income group']
 
         def unit_weighted_median(data):

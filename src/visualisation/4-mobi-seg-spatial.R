@@ -15,7 +15,7 @@ library(geojsonsf)
 library(ggraph)
 library(scico)
 library(scales)
-
+options(scipen=10000)
 
 # Static visualisation (Mobility vs. housing by region)
 # region 1=Stockholm, 14=Gothenburg, 12=Malmö
@@ -62,7 +62,7 @@ segregation.mapping <- function(geo2plot, var, vname, fname, bmap){
     theme(legend.position = 'bottom',
           plot.margin = margin(0,0,0,0, "cm"))
 
-  G <- ggarrange(g1, g2, ncol = 2, nrow = 1, labels = c('Experienced', 'Housing'),
+  G <- ggarrange(g1, g2, ncol = 2, nrow = 1, labels = c('Visiting', 'Housing'),
                   common.legend = T, legend="top")
   ggsave(filename = paste0("figures/", fname), plot=G,
          width = 8, height = 5, unit = "in", dpi = 300)
@@ -70,11 +70,11 @@ segregation.mapping <- function(geo2plot, var, vname, fname, bmap){
 
 vars <- c('Unevenness of income', 'Unevenness of birth region', 'Unevenness of foreign background',
           'Foreign background', 'Not Sweden', 'Lowest income group')
-names(vars) <- c('S_income', 'S_birth_region', 'S_background',
+names(vars) <- c('evenness_income', 'evenness_birth_region', 'evenness_background',
                  "Foreign_background", "Not_Sweden", "Lowest_income_group")
 
 regions <- c('Stockholm', 'Gothenburg', 'Malmo')
-names(regions) <- c('01', '12', '14')
+names(regions) <- c('01', '14', '12')
 
 # Weekday, non-holiday
 for (r in names(regions)){

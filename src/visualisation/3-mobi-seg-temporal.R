@@ -6,26 +6,27 @@
 library(dplyr)
 library(ggplot2)
 library(ggpubr)
+options(scipen=10000)
 
 df <- read.csv('results/mobi_seg_tempo.csv')
 
 g1 <- ggplot(data=df[df$deso_3 == 1,]) +
-  geom_line(aes(x=time_seq/2, y=S_birth_region, group=type, color=type)) +
+  geom_line(aes(x=time_seq/2, y=evenness_income, group=type, color=type)) +
   facet_wrap(holiday~weekday, labeller = label_both, ncol=4) +
   theme_minimal() +
-  labs(x = 'Time (h)', y = 'Unevenness of birth region')
+  labs(x = 'Time (h)', y = 'Unevenness of income')
 
 g2 <- ggplot(data=df[df$deso_3 == 14,]) +
-  geom_line(aes(x=time_seq/2, y=S_birth_region, group=type, color=type)) +
+  geom_line(aes(x=time_seq/2, y=evenness_income, group=type, color=type)) +
   facet_wrap(holiday~weekday, labeller = label_both, ncol=4) +
   theme_minimal() +
-  labs(x = 'Time (h)', y = 'Unevenness of birth region')
+  labs(x = 'Time (h)', y = 'Unevenness of income')
 
 g3 <- ggplot(data=df[df$deso_3 == 12,]) +
-  geom_line(aes(x=time_seq/2, y=S_birth_region, group=type, color=type)) +
+  geom_line(aes(x=time_seq/2, y=evenness_income, group=type, color=type)) +
   facet_wrap(holiday~weekday, labeller = label_both, ncol=4) +
   theme_minimal() +
-  labs(x = 'Time (h)', y = 'Unevenness of birth region')
+  labs(x = 'Time (h)', y = 'Unevenness of income')
 
 G <- ggarrange(g1, g2, g3, ncol = 1, nrow = 3, common.legend = T,
                labels = c('Stockholm', 'Gothenburg', 'Malmo'))

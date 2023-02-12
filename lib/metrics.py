@@ -44,7 +44,7 @@ class MobilityMeasuresIndividual:
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
         print("Loading home and segregation data.")
         self.home = pd.read_sql_query(sql="""SELECT uid, deso, lng, lat FROM home_sub;""", con=engine)
-        self.resi_seg = pd.read_sql_query(sql="""SELECT region, var, "S", iso FROM resi_segregation;""", con=engine)
+        self.resi_seg = pd.read_sql_query(sql="""SELECT region, var, evenness, iso FROM resi_segregation;""", con=engine)
         self.zone_stats = pd.read_sql_query(sql="""SELECT * FROM zone_stats;""", con=engine)
 
     def load_mobi_data(self, test=False):

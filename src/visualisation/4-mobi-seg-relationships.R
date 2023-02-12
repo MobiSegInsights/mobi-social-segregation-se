@@ -1,4 +1,4 @@
-# Title     : Experienced vs. housing segregation on
+# Title     : Visiting vs. housing segregation on
 # Objective : Value difference on maps
 # Created by: Yuan Liao
 # Created on: 2023-2-3
@@ -22,7 +22,7 @@ geo <- geo %>%
          'Not_Sweden_h'='Not Sweden_h',
          'Lowest_income_group_h'='Lowest income group_h')
 
-fb.tre <- 0.5
+fb.tre <- quantile(geo$Lowest_income_group_h, 0.5)
 # g0 <- ggplot() +
 #   geom_point(data=geo[geo$Lowest_income_group_h > fb.tre, ],
 #              aes(x=S_background_h, y=S_background), color='red') +
@@ -32,42 +32,42 @@ fb.tre <- 0.5
 
 
 g1 <- ggplot() +
-  geom_point(data=geo[geo$Foreign_background_h > fb.tre, ],
-             aes(x=S_background_h, y=Lowest_income_group_h, color='>50%')) +
-  geom_smooth(data=geo[geo$Foreign_background_h > fb.tre, ],
-             aes(x=S_background_h, y=Lowest_income_group_h, color='>50%'),
+  geom_point(data=geo[geo$Lowest_income_group_h > fb.tre, ],
+             aes(x=evenness_income_h, y=Foreign_background_h, color='>25%')) +
+  geom_smooth(data=geo[geo$Lowest_income_group_h > fb.tre, ],
+             aes(x=evenness_income_h, y=Foreign_background_h, color='>25%'),
              method='lm', formula= y~x) +
-  geom_point(data=geo[geo$Foreign_background_h <= fb.tre, ],
-             aes(x=S_background_h, y=Lowest_income_group_h, color='<=50%')) +
-  geom_smooth(data=geo[geo$Foreign_background_h <= fb.tre, ],
-             aes(x=S_background_h, y=Lowest_income_group_h, color='<=50%'),
+  geom_point(data=geo[geo$Lowest_income_group_h <= fb.tre, ],
+             aes(x=evenness_income_h, y=Foreign_background_h, color='<=25%')) +
+  geom_smooth(data=geo[geo$Lowest_income_group_h <= fb.tre, ],
+             aes(x=evenness_income_h, y=Foreign_background_h, color='<=25%'),
              method='lm', formula= y~x) +
-  ylim(0.05, 0.6) +
-  scale_color_manual(name='Share of foreign backgrounds',
-                     breaks=c('>50%', '<=50%'),
-                     values=c('>50%'='orange', '<=50%'='steelblue')) +
-  labs(x = 'Unevenness of background', y = 'Share of lowest income group') +
+#  ylim(0.05, 0.6) +
+  scale_color_manual(name='Share of lowest-income group',
+                     breaks=c('>25%', '<=25%'),
+                     values=c('>25%'='orange', '<=25%'='steelblue')) +
+  labs(x = 'Unevenness of income', y = 'Share of foreign background') +
   theme_minimal()
 
 g2 <- ggplot() +
-  geom_point(data=geo[geo$Foreign_background > fb.tre, ],
-             aes(x=S_background, y=Lowest_income_group, color='>50%')) +
-  geom_smooth(data=geo[geo$Foreign_background > fb.tre, ],
-           aes(x=S_background, y=Lowest_income_group, color='>50%'),
+  geom_point(data=geo[geo$Lowest_income_group > fb.tre, ],
+             aes(x=evenness_income, y=Foreign_background, color='>25%')) +
+  geom_smooth(data=geo[geo$Lowest_income_group > fb.tre, ],
+           aes(x=evenness_income, y=Foreign_background, color='>25%'),
            method='lm', formula= y~x) +
-  geom_point(data=geo[geo$Foreign_background <= fb.tre, ],
-           aes(x=S_background, y=Lowest_income_group, color='<=50%')) +
-  geom_smooth(data=geo[geo$Foreign_background <= fb.tre, ],
-           aes(x=S_background, y=Lowest_income_group, color='<=50%'),
+  geom_point(data=geo[geo$Lowest_income_group <= fb.tre, ],
+           aes(x=evenness_income, y=Foreign_background, color='<=25%')) +
+  geom_smooth(data=geo[geo$Lowest_income_group <= fb.tre, ],
+           aes(x=evenness_income, y=Foreign_background, color='<=25%'),
            method='lm', formula= y~x) +
-  ylim(0.05, 0.6) +
-  scale_color_manual(name='Share of foreign backgrounds',
-                   breaks=c('>50%', '<=50%'),
-                   values=c('>50%'='orange', '<=50%'='steelblue')) +
-  labs(x = 'Unevenness of background', y = 'Share of lowest income group') +
+#  ylim(0.05, 0.6) +
+  scale_color_manual(name='Share of lowest-income group',
+                   breaks=c('>25%', '<=25%'),
+                   values=c('>25%'='orange', '<=25%'='steelblue')) +
+  labs(x = 'Unevenness of income', y = 'Share of foreign background') +
   theme_minimal()
 
-G <- ggarrange(g1, g2, ncol = 2, nrow = 1, labels = c('Housing', 'Experienced'),
+G <- ggarrange(g1, g2, ncol = 2, nrow = 1, labels = c('Housing', 'Visiting'),
                 common.legend = T, legend="top")
 ggsave(filename = paste0("figures/", 'mobi_seg_working_days_relationship.png'), plot=G,
        width = 8, height = 5, unit = "in", dpi = 300)

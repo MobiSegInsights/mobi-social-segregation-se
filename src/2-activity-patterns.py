@@ -38,32 +38,32 @@ if __name__ == '__main__':
     time_elapsed = (end - start) // 60  # in minutes
     print(f"Aggregate temporal profiles computed in {time_elapsed} minutes.")
 
-    print(f'Calculating record weights:')
-    start = time.time()
-    activity_patterns.add_weight2records()
-    end = time.time()
-    time_elapsed = (end - start) // 60  # in minutes
-    print(f"Weights computed in {time_elapsed} minutes.")
-
-    print(f'Calculating cluster statistics:')
-    start = time.time()
-    activity_patterns.cluster_stats()
-    end = time.time()
-    time_elapsed = (end - start) // 60  # in minutes
-    print(f"Cluster statistics computed in {time_elapsed} minutes.")
-
-    top_n = 3
-    print(f'Calculating temporal patterns of top {top_n} clusters (weighted):')
-    start = time.time()
-    engine = sqlalchemy.create_engine(
-        f'postgresql://{activity_patterns.user}:{activity_patterns.password}'
-        f'@localhost:{activity_patterns.port}/{activity_patterns.db_name}')
-    df_top = pd.read_sql_query(sql="""SELECT * FROM description.clusters_top%s_wt;"""%top_n,
-                               con=engine)
-    print(f'Keep those devices with more than one cluster.')
-    df_top_size = df_top['uid'].value_counts().rename_axis('uid').reset_index(name='cluster_num')
-    df_top = df_top.loc[df_top.uid.isin(df_top_size.loc[df_top_size.cluster_num > 1, 'uid']), :]
-    activity_patterns.activities_temporal(df_top=df_top)
-    end = time.time()
-    time_elapsed = (end - start) // 60  # in minutes
-    print(f"Cluster statistics computed in {time_elapsed} minutes.")
+    # print(f'Calculating record weights:')
+    # start = time.time()
+    # activity_patterns.add_weight2records()
+    # end = time.time()
+    # time_elapsed = (end - start) // 60  # in minutes
+    # print(f"Weights computed in {time_elapsed} minutes.")
+    #
+    # print(f'Calculating cluster statistics:')
+    # start = time.time()
+    # activity_patterns.cluster_stats()
+    # end = time.time()
+    # time_elapsed = (end - start) // 60  # in minutes
+    # print(f"Cluster statistics computed in {time_elapsed} minutes.")
+    #
+    # top_n = 3
+    # print(f'Calculating temporal patterns of top {top_n} clusters (weighted):')
+    # start = time.time()
+    # engine = sqlalchemy.create_engine(
+    #     f'postgresql://{activity_patterns.user}:{activity_patterns.password}'
+    #     f'@localhost:{activity_patterns.port}/{activity_patterns.db_name}')
+    # df_top = pd.read_sql_query(sql="""SELECT * FROM description.clusters_top%s_wt;"""%top_n,
+    #                            con=engine)
+    # print(f'Keep those devices with more than one cluster.')
+    # df_top_size = df_top['uid'].value_counts().rename_axis('uid').reset_index(name='cluster_num')
+    # df_top = df_top.loc[df_top.uid.isin(df_top_size.loc[df_top_size.cluster_num > 1, 'uid']), :]
+    # activity_patterns.activities_temporal(df_top=df_top)
+    # end = time.time()
+    # time_elapsed = (end - start) // 60  # in minutes
+    # print(f"Cluster statistics computed in {time_elapsed} minutes.")

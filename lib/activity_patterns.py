@@ -50,13 +50,13 @@ class ActivityPatterns:
     def aggregate_activity_temporal(self):
         # All records of stays
         all = list(self.data.loc[:, ['h_s', 'dur']].to_records(index=False))
-        df_all = preprocess.cluster_tempo(pur='all', temps=all)
+        df_all = preprocess.cluster_tempo(pur='all', temps=all, norm=False)
         # Holiday
         holidays = list(self.data.loc[self.data.holiday == 1, ['h_s', 'dur']].to_records(index=False))
-        df_holidays = preprocess.cluster_tempo(pur='holiday', temps=holidays)
+        df_holidays = preprocess.cluster_tempo(pur='holiday', temps=holidays, norm=False)
         # Non-holiday
         non_holidays = list(self.data.loc[self.data.holiday == 0, ['h_s', 'dur']].to_records(index=False))
-        df_nholidays = preprocess.cluster_tempo(pur='non_holiday', temps=non_holidays)
+        df_nholidays = preprocess.cluster_tempo(pur='non_holiday', temps=non_holidays, norm=False)
         return pd.concat([df_all, df_holidays, df_nholidays])
 
     def add_weight2records(self):

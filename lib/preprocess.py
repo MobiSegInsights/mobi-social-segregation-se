@@ -263,11 +263,11 @@ def df2batches(df, chunk_size=30000):
     return df_list
 
 
-def cluster_tempo(pur=None, temps=None, prt=True):
+def cluster_tempo(pur=None, temps=None, prt=True, norm=True):
     """
     :param pur: Purpose to add to the activity
     :type pur: str
-    :param temps: List of tuples containing start half-hour and duration
+    :param temps: List of tuples containing start (hour) and duration (minute)
     :type temps: list
     :return: A dataframe of half-hour frequency of a certain activity.
     :rtype:
@@ -275,17 +275,19 @@ def cluster_tempo(pur=None, temps=None, prt=True):
     holder = np.zeros((48, 1))
     if prt:
         for tm in tqdm(temps, desc='Counting minute stays'):
-            start_ = int(np.floor(tm[0] / 30))
-            end_ = int(np.floor((tm[0] + int(tm[1])) / 30))
+            start_ = int(np.floor(tm[0] * 60 / 30))
+            end_ = int(np.floor((tm[0] * 60 + int(tm[1])) / 30))
             holder[start_:end_ + 1, 0] += 1
     else:
         for tm in temps:
-            start_ = int(np.floor(tm[0] / 30))
-            end_ = int(np.floor((tm[0] + int(tm[1])) / 30))
+            start_ = int(np.floor(tm[0] * 60 / 30))
+            end_ = int(np.floor((tm[0] * 60 + int(tm[1])) / 30))
             holder[start_:end_ + 1, 0] += 1
     df = pd.DataFrame()
     df.loc[:, 'half_hour'] = range(0, 48)
-    df.loc[:, 'freq'] = holder / max(holder)
+    df.loc[:, 'freq'] = holder
+    if norm:
+        df.loc[:, 'freq'] /= max(holder)
     if pur is not None:
         df.loc[:, 'activity'] = pur
     return df

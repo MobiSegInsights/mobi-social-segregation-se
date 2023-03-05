@@ -44,12 +44,21 @@ class MobiSegAggregation:
         df_indi_metrics = self.mobi_metrics.loc[self.mobi_metrics.uid.isin(self.mobi_data.uid.unique()), :]
         self.mobi_data = pd.merge(self.mobi_data, df_indi_metrics, on='uid', how='left')
 
+        print('Add income quantiles')
+        df_inc_grps = pd.read_csv("dbs/DeSO/income_2019.csv")
+        self.mobi_data = pd.merge(self.mobi_data, df_inc_grps[['region', 'q1', 'q2', 'q3', 'q4']], on='region', how='left')
+
     def aggregating_metrics(self):
         cols = ['number_of_locations', 'number_of_visits',
                 'average_displacement', 'radius_of_gyration',
                 'median_distance_from_home', 'evenness_income', 'iso_income',
                 'evenness_birth_region', 'iso_birth_region', 'evenness_background', 'iso_background',
                 'Foreign background', 'Not Sweden', 'Lowest income group']
+
+        def income_evenness_agg(n=4, q_grps=None):
+            suma = sum([abs(q - 1 / n) for q in q_grps])
+            s_i = n / (2 * n - 2) * suma
+            return s_i
 
         def unit_weighted_median(data):
             # hex_id_ = data.hex_id.values[0]
@@ -67,6 +76,12 @@ class MobiSegAggregation:
             # Mobility patterns and segregation measures
             for v in cols:
                 metrics_dict[v] = weighted.median(data[v], data['wt_total'])
+            # Modified aggregation of income unevenness
+            q1, q2, q3, q4 = sum(data['q1'] * data['wt_total']), sum(data['q2'] * data['wt_total']),\
+                             sum(data['q3'] * data['wt_total']), sum(data['q4'] * data['wt_total'])
+            sum_ = sum((q1, q2, q3, q4))
+            q1, q2, q3, q4 = q1/sum_, q2/sum_, q3/sum_, q4/sum_
+            metrics_dict['evenness_income_r'] = income_evenness_agg(n=4, q_grps=(q1, q2, q3, q4))
             return pd.Series(metrics_dict)
 
         grps = ['weekday', 'holiday', 'time_seq', 'hex_id']

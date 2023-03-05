@@ -5,25 +5,22 @@ library(ggplot2)
 library(ggmap)
 library(ggsn)
 library(mapdeck)
+library(geojsonsf)
 
-zones <- st_transform(st_read('InteractiveResiSegSweden/data/resi_segregation.shp'), crs = 4326)
-zones <- zones %>%
-  filter(deso_3 %in% c('14', '12', '01'))
-col2plot <- 'S_inc'
+
+zones <- geojson_sf("InteractiveResiSegSweden/data/residential_income_segregation.geojson")
+zones2 <- geojson_sf("InteractiveResiSegSweden/data/mobi_seg_spatio_static.geojson")
+
+col2plot <- 'evenness_income'
 zones2plot <- zones %>% select(col2plot) %>% rename(var=col2plot)
 bins <- c(seq(min(zones2plot$var), max(zones2plot$var), 0.1), max(zones2plot$var))
 pal <- colorBin("viridis", domain = zones2plot$var, bins = bins)
-zones2plot %>%
-  leaflet() %>%
-  addTiles() %>%
-  addPolygons(fillColor = ~pal(var), opacity=0, fillOpacity = 0.5) %>%
-  addLegend(position="bottomright", pal = pal, values = ~var,
-            title = NULL,
-            opacity = 0.3)
-mapdeck(token = Sys.getenv("mapbox_token"), style = mapdeck_style("dark")) %>%
+
+mapdeck(token = "pk.eyJ1IjoieXVhbmxpYW8iLCJhIjoiY2xkMGl6bGw1MWRqODNycDdiMmdoMzR1eSJ9.cW2c9yeQZG27b8Z37EUeVg", 
+        style = mapdeck_style("dark")) %>%
   add_polygon(
-    data = zones2plot
+    data = zones
     , layer = "polygon_layer"
-    , fill_colour = "var"
+    , fill_colour = "Lowest income group"
     , legend = TRUE
   )

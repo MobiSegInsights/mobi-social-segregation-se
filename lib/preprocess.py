@@ -16,7 +16,9 @@ from timezonefinder import TimezoneFinder
 from datetime import datetime
 from p_tqdm import p_map
 import multiprocessing
-
+from infostop import Infostop
+# Set up infostop parameters
+R1, R2, MIN_STAY, MAX_TIME_BETWEEN = 30, 30, 15, 12  # meters, meters, minutes, hours
 
 def get_repo_root():
     """Get the root directory of the repo."""
@@ -31,6 +33,62 @@ with open(os.path.join(ROOT_dir, 'dbs', 'keys.yaml')) as f:
     keys_manager = yaml.load(f, Loader=yaml.FullLoader)
 
 
+def infostop_per_user(key, data):
+    model = Infostop(
+        r1=R1,
+        r2=R2,
+        label_singleton=True,
+        min_staying_time=MIN_STAY * 60,
+        max_time_between=MAX_TIME_BETWEEN * 60 * 60,
+        min_size=2,
+        min_spacial_resolution=0,
+        distance_metric='haversine',
+        weighted=False,
+        weight_exponent=1,
+        verbose=False, )
+    x = data.loc[~(((data['latitude'] > 84) | (data['latitude'] < -80)) | (
+                (data['longitude'] > 180) | (data['longitude'] < -180))), :]
+    x = x.sort_values(by='timestamp').drop_duplicates(subset=['latitude', 'longitude', 'timestamp']).reset_index(
+        drop=True)
+    x = x.dropna()
+    ##THE THING RECORDS A POINT EVERYTIME THE ACCELEROMETER REGISTER A CHANGE, SO ASSUME NO MOVE UP TO 12 hours
+    x['t_seg'] = x['timestamp'].shift(-1)
+    x.loc[x.index[-1], 't_seg'] = x.loc[x.index[-1], 'timestamp'] + 1
+    x['n'] = x.apply(lambda x: range(int(x['timestamp']),
+                                     min(int(x['t_seg']), x['timestamp'] + (MAX_TIME_BETWEEN * 60 * 60)),
+                                     (MAX_TIME_BETWEEN * 60 * 60 - 1)), axis=1)
+    x = x.explode('n')
+    x['timestamp'] = x['n'].astype(float)
+    x = x[['latitude', 'longitude', 'timestamp']].dropna()  # ,'timezone'
+
+    try:
+        labels = model.fit_predict(x[['latitude', 'longitude', 'timestamp']].values)
+    except:
+        return pd.DataFrame([], columns=['device_aid', 'timestamp', 'latitude', 'longitude', 'loc', 'stop_latitude',
+                                         'stop_longitude', 'interval'])  # ,'timezone'
+
+    label_medians = model.compute_label_medians()
+    x['loc'] = labels
+    x['same_loc'] = x['loc'] == x['loc'].shift()
+    # x['same_timezone'] = x['timezone']==x['timezone'].shift()
+    x['little_time'] = (x['timestamp'] - x['timestamp'].shift() < MAX_TIME_BETWEEN * 60 * 60)
+
+    x['interval'] = (~(x['same_loc'] &
+                       x['little_time'])).cumsum()  # & x['same_timezone']
+
+    latitudes = {k: v[0] for k, v in label_medians.items()}
+    longitudes = {k: v[1] for k, v in label_medians.items()}
+    x['stop_latitude'] = x['loc'].map(latitudes)
+    x['stop_longitude'] = x['loc'].map(longitudes)
+    x['device_aid'] = key[0]
+
+    # keep only stop locations
+    x = x[x['loc'] > 0].copy()
+
+    return x[['device_aid', 'timestamp', 'latitude', 'longitude', 'loc', 'stop_latitude', 'stop_longitude',
+              'interval']]  # ,'timezone'
+
+
 def convert_to_location_tz(row, _tf=TimezoneFinder()):
     # if lat/lon aren't specified, we just want the existing name (e.g. UTC)
     if (row.lat == 0) & (row.lng == 0):
@@ -43,6 +101,17 @@ def convert_to_location_tz(row, _tf=TimezoneFinder()):
     return row.datetime.tz_localize('UTC').tzname(), row.datetime, row.leaving_datetime  # else return existing name
 
 
+def get_timezone(longitude, latitude):
+    if longitude is None or latitude is None:
+        return None
+    tzf = TimezoneFinder()
+    try:
+        timeZone = tzf.timezone_at(lng=longitude, lat=latitude)
+    except:
+        timeZone = None
+    return timeZone
+
+
 def raw_time_processing(filepath, selectedcols):
     """
     Read the compressed files and get the chunk for time processing.
@@ -50,10 +119,15 @@ def raw_time_processing(filepath, selectedcols):
     :return:
     A dataframe with each row a record.
     """
+    # ['timestamp', 'device_aid', 'latitude', 'longitude', 'location_method']
     df = pd.read_csv(filepath, sep='\t', compression='gzip', usecols=selectedcols)
-    df = df.loc[df['timestamp'] != 'timestamp', :]
-    df['timestamp'] = df['timestamp'].astype(int)
-    df.loc[:, "TimeUTC"] = df.apply(lambda row: datetime.fromtimestamp(row['timestamp']), axis=1)
+    if 'timesamp' in df['timestamp']:
+        df = df.drop([851965])
+        df['timestamp'] = df['timestamp'].astype(int)
+        df['device_aid'] = df['device_aid'].astype(str)
+        df['location_method'] = df['location_method'].astype(str)
+        df['latitude'] = df['latitude'].astype(float)
+        df['longitude'] = df['longitude'].astype(float)
     return df
 
 

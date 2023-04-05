@@ -112,25 +112,6 @@ def get_timezone(longitude, latitude):
     return timeZone
 
 
-def raw_time_processing(filepath, selectedcols):
-    """
-    Read the compressed files and get the chunk for time processing.
-    :param file: a string that points to raw records, e.g., "VGR_raw_mobile_2019_10.csv.gz"
-    :return:
-    A dataframe with each row a record.
-    """
-    # ['timestamp', 'device_aid', 'latitude', 'longitude', 'location_method']
-    df = pd.read_csv(filepath, sep='\t', compression='gzip', usecols=selectedcols)
-    if 'timesamp' in df['timestamp']:
-        df = df.drop([851965])
-        df['timestamp'] = df['timestamp'].astype(int)
-        df['device_aid'] = df['device_aid'].astype(str)
-        df['location_method'] = df['location_method'].astype(str)
-        df['latitude'] = df['latitude'].astype(float)
-        df['longitude'] = df['longitude'].astype(float)
-    return df
-
-
 def raw2df2db(file, user, password, port, db_name, table_name, schema_name):
     """
     Read the compressed files and get the dataframe for further processing.
@@ -337,8 +318,14 @@ def df2batches(df, chunk_size=30000):
     return df_list
 
 
-def cluster_tempo(pur=None, temps=None, prt=True, norm=True):
+def cluster_tempo(pur=None, temps=None, interval=30, maximum_days=2, norm=True):
     """
+    :param maximum_days: number of days a stay spans, usually 2 days
+    holder_size = maximum_days x 24 x (60 / interval)
+    holder_day = 24 x (60 / interval)
+    :type maximum_days: int
+    :param interval: resolution of temporal counting in minute, e.g., 30 min
+    :type interval: int
     :param pur: Purpose to add to the activity
     :type pur: str
     :param temps: List of tuples containing start (hour) and duration (minute)
@@ -346,29 +333,35 @@ def cluster_tempo(pur=None, temps=None, prt=True, norm=True):
     :return: A dataframe of half-hour frequency of a certain activity.
     :rtype:
     """
-    holder = np.zeros((48, 1))
-    if prt:
-        for tm in tqdm(temps, desc='Counting minute stays'):
-            start_ = int(np.floor(tm[0] * 60 / 30))
-            end_ = int(np.floor((tm[0] * 60 + int(tm[1])) / 30))
-            holder[start_:end_ + 1, 0] += 1
+    holder_size = int(maximum_days * 24 * (60 / interval))
+    holder = np.zeros((holder_size, 1))
+    for tm in temps:
+        start_ = int(np.floor(tm[0] * 60 / interval))
+        end_ = int(np.floor((tm[0] * 60 + int(tm[1])) / interval))
+        holder[start_:end_ + 1, 0] += 1
+    if maximum_days != 1:
+        mk = int(24 * (60 / interval))
+        holder_day = holder[:mk] + holder[mk:]  # This fold it back to 24 hour temporal profile
     else:
-        for tm in temps:
-            start_ = int(np.floor(tm[0] * 60 / 30))
-            end_ = int(np.floor((tm[0] * 60 + int(tm[1])) / 30))
-            holder[start_:end_ + 1, 0] += 1
+        holder_day = holder
     df = pd.DataFrame()
-    df.loc[:, 'half_hour'] = range(0, 48)
-    df.loc[:, 'freq'] = holder
+    df.loc[:, 'half_hour'] = range(0, len(holder_day))
+    df.loc[:, 'freq'] = holder_day
     if norm:
-        df.loc[:, 'freq'] /= max(holder)
+        df.loc[:, 'freq'] /= max(holder_day)
     if pur is not None:
         df.loc[:, 'activity'] = pur
     return df
 
 
-def cluster_tempo_weighted(pur=None, temps=None, prt=True):
+def cluster_tempo_weighted(pur=None, temps=None, interval=30, maximum_days=2):
     """
+    :param maximum_days: number of days a stay spans, usually 2 days
+    holder_size = maximum_days x 24 x (60 / interval)
+    holder_day = 24 x (60 / interval)
+    :type maximum_days: int
+    :param interval: resolution of temporal counting in minute, e.g., 30 min
+    :type interval: int
     :param pur: Purpose to add to the activity
     :type pur: str
     :param temps: List of tuples containing start half_hour, duration, and weight
@@ -376,84 +369,41 @@ def cluster_tempo_weighted(pur=None, temps=None, prt=True):
     :return: A dataframe of half-hour frequency of a certain activity.
     :rtype:
     """
-    holder = np.zeros((48, 1))
-    holder_wt = np.zeros((48, 1))
-    if prt:
-        for tm in tqdm(temps, desc='Counting minute stays'):
-            start_ = int(np.floor(tm[0] / 30))
-            end_ = int(np.floor((tm[0] + int(tm[1])) / 30))
-            holder[start_:end_ + 1, 0] += 1
-            holder_wt[start_:end_ + 1, 0] += tm[2]
+    holder_size = int(maximum_days * 24 * (60 / interval))
+    holder = np.zeros((holder_size, 1))
+    holder_wt = np.zeros((holder_size, 1))
+    for tm in temps:
+        start_ = int(np.floor(tm[0] / interval))
+        end_ = int(np.floor((tm[0] + int(tm[1])) / interval))
+        holder[start_:end_ + 1, 0] += 1
+        holder_wt[start_:end_ + 1, 0] += tm[2]
+    if maximum_days != 1:
+        mk = int(24 * (60 / interval))
+        holder_day = holder[:mk] + holder[mk:]  # This fold it back to 24 hour temporal profile
+        holder_day_wt = holder_wt[:mk] + holder_wt[mk:]  # This fold it back to 24 hour temporal profile
     else:
-        for tm in temps:
-            start_ = int(np.floor(tm[0] / 30))
-            end_ = int(np.floor((tm[0] + int(tm[1])) / 30))
-            holder[start_:end_ + 1, 0] += 1
-            holder_wt[start_:end_ + 1, 0] += tm[2]
+        holder_day = holder
+        holder_day_wt = holder_wt
     df = pd.DataFrame()
     df.loc[:, 'half_hour'] = range(0, 48)
-    df.loc[:, 'freq'] = holder / max(holder)
-    df.loc[:, 'freq_wt'] = holder_wt / max(holder_wt)
+    df.loc[:, 'freq'] = holder_day / max(holder_day)
+    df.loc[:, 'freq_wt'] = holder_day_wt / max(holder_day_wt)
     if pur is not None:
         df.loc[:, 'activity'] = pur
     return df
-
-
-def mobi_data_time_enrich(data):
-    """
-    This function add a few useful columns based on dataframe's local time.
-    :type data: dataframe
-    :return: A dataframe with hour of the time, holiday label
-    """
-    # Add start time hour and duration in minute
-    data.loc[:, 'h_s'] = data.loc[:, 'TimeLocal'].apply(lambda x: x.hour + x.minute / 60)
-    data.loc[:, 'dur'] = data.loc[:, 'dur'] / 60
-    # Mark holiday season boundaries
-    summer_start = datetime.strptime("2019-06-23 00:00:00", "%Y-%m-%d %H:%M:%S")
-    summer_end = datetime.strptime("2019-08-11 00:00:00", "%Y-%m-%d %H:%M:%S")
-    christmas_start = datetime.strptime("2019-12-22 00:00:00", "%Y-%m-%d %H:%M:%S")
-
-    def holiday(x, s1, s2, s3):
-        if (s1 < x < s2) | (x > s3):
-            return 1
-        else:
-            return 0
-
-    data.loc[:, 'gp'] = np.random.randint(multiprocessing.cpu_count(), size=len(data))
-
-    def time_enrichment_parallel(df):
-        # Add holiday season label
-        df.loc[:, 'holiday'] = df.loc[:, 'TimeLocal'].apply(
-            lambda x: holiday(x, summer_start, summer_end, christmas_start))
-        # Add weekend/weekday label
-        df.loc[:, 'weekday'] = df.loc[:, 'TimeLocal'].apply(lambda x: 0 if x.weekday() in [5, 6] else 1)
-        return df
-    reslt = p_map(time_enrichment_parallel, [g for _, g in data.groupby('gp', group_keys=True)])
-    data = pd.concat(reslt)
-    data = data.drop(columns=['gp'])
-
-    # Add individual sequence index
-    data = data.sort_values(by=['uid', 'TimeLocal'], ascending=True)
-
-    def indi_seq(df):
-        df.loc[:, 'seq'] = range(1, len(df) + 1)
-        return df
-
-    reslt = p_map(indi_seq, [g for _, g in data.groupby('uid', group_keys=True)])
-    data = pd.concat(reslt)
-    return data
 
 
 def record_weights(data):
     """
     This function produces weight column based the temporal distribution of records.
     The weight is for approximating evenly sampling.
+    This function assumes the default parameters adopted in cluster_tempo.
     :type data: dataframe with h_s, dur columns
     :return: a dataframe with wt
     """
     # Get weights
     recs = list(data[['h_s', 'dur']].to_records(index=False))
-    df_tp = cluster_tempo(temps=recs, prt=False)
+    df_tp = cluster_tempo(temps=recs)
     df_tp.loc[:, 'wt'] = df_tp.loc[:, 'freq'].apply(lambda x: 1 / x if x != 0 else 0)
     wt = df_tp.loc[:, 'wt'].values.reshape((48, 1))
 
@@ -463,12 +413,5 @@ def record_weights(data):
         end_ = int(np.floor((row['h_s'] + int(row['dur'])) / 30))
         return np.sum(wt[start_:end_ + 1, 0])
 
-    def parallel_func(df):
-        df.loc[:, 'wt'] = df.apply(lambda row: row_weight_assign(row), axis=1)
-        return df
-
-    data.loc[:, 'gp'] = np.random.randint(multiprocessing.cpu_count(), size=len(data))
-    retLst = p_map(parallel_func, [g for _, g in data.groupby('gp', group_keys=True)])
-    data = pd.concat(retLst)
-    data = data.drop(columns=['gp'])
+    data.loc[:, 'wt'] = data.apply(lambda row: row_weight_assign(row), axis=1)
     return data

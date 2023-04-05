@@ -3,10 +3,8 @@ import subprocess
 import os
 import pandas as pd
 import utm
-import sqlalchemy
 import time
 from p_tqdm import p_map
-from tqdm import tqdm
 import numpy as np
 
 

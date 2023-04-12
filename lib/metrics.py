@@ -31,8 +31,8 @@ class MobilityMeasuresIndividual:
     def __init__(self):
         self.home = None
         self.mobi_data = None
-        self.resi_seg = None
-        self.zone_stats = None
+        # self.resi_seg = None
+        # self.zone_stats = None
         self.mobi_data_traj = None
         self.user = preprocess.keys_manager['database']['user']
         self.password = preprocess.keys_manager['database']['password']
@@ -43,24 +43,41 @@ class MobilityMeasuresIndividual:
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
         print("Loading home and segregation data.")
-        self.home = pd.read_sql_query(sql="""SELECT uid, deso, lng, lat FROM home_sub;""", con=engine)
-        self.resi_seg = pd.read_sql_query(sql="""SELECT region, var, evenness, iso FROM resi_segregation;""", con=engine)
-        self.zone_stats = pd.read_sql_query(sql="""SELECT * FROM zone_stats;""", con=engine)
+        self.home = pd.read_sql_query(sql="""SELECT uid, zone, deso, wt_p, lng, lat FROM home_p;""", con=engine)
+        # self.resi_seg = pd.read_sql_query(sql="""SELECT region, var, evenness, iso FROM resi_seg_deso;""", con=engine)
+        # self.zone_stats = pd.read_sql_query(sql="""SELECT * FROM zone_stats;""", con=engine)
 
-    def load_mobi_data(self, test=False):
+    def load_mobi_data(self, test=False, traj_format=True):
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
         print("Loading mobility data.")
-        self.mobi_data = pd.read_sql_query(sql="""SELECT uid, date, month, "TimeLocal", dur,
-        lat, lng, cluster FROM stops_subset;""", con=engine)
         if test:
-            self.mobi_data = self.mobi_data.head(10000)
+            self.mobi_data = pd.read_sql_query(sql="""SELECT uid, "localtime", dur, lat, lng, 
+                                                      loc, h_s, holiday_s, weekday_s FROM stops_p
+                                                      WHERE dur < 720
+                                                      LIMIT 10000;""",
+                                               con=engine)
+        else:
+            self.mobi_data = pd.read_sql_query(sql="""SELECT uid, "localtime", dur, lat, lng, 
+                                                      loc, h_s, holiday_s, weekday_s FROM stops_p 
+                                                      WHERE dur < 720;""",
+                                               con=engine)
+        self.mobi_data = self.mobi_data.rename(columns={'holiday_s': 'holiday',
+                                                        'weekday_s': 'weekday'})
+        df_uids = pd.read_sql_query(
+            sql="""SELECT uid, num_loc FROM description.stops_p WHERE num_days > 7;""", con=engine)
+        df_uids = df_uids.loc[df_uids.num_loc > 2, :]
+        self.mobi_data = self.mobi_data.loc[self.mobi_data.uid.isin(df_uids.uid), :]
         self.mobi_data = self.mobi_data.loc[self.mobi_data.uid.isin(self.home.uid), :]
-        print("Converting it to scikit-learn format.")
-        self.mobi_data_traj = skmob.TrajDataFrame(self.mobi_data,
-                                                  latitude='lat', longitude='lng',
-                                                  datetime='TimeLocal',
-                                                  user_id='uid')
+        num_uids, num_stays = self.mobi_data['uid'].nunique(), len(self.mobi_data)
+        print(f"Apply {num_stays} stays from {num_uids} devices.")
+
+        if traj_format:
+            print("Converting it to scikit-learn format.")
+            self.mobi_data_traj = skmob.TrajDataFrame(self.mobi_data,
+                                                      latitude='lat', longitude='lng',
+                                                      datetime='localtime',
+                                                      user_id='uid')
 
     def rg(self):
         return radius_of_gyration(self.mobi_data_traj)
@@ -92,32 +109,25 @@ class MobilityMeasuresIndividual:
 class MobilitySegregationPlace(MobilityMeasuresIndividual):
     def __init__(self):
         super().__init__()
-        self.hexagons = None
+        self.zones = None
         self.mobi_metrics = None
 
-    def load_hexagons_mobi_metrics(self):
+    def load_deso_zones(self):
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
-        print('Loading hexagons...')
-        self.hexagons = gpd.GeoDataFrame.from_postgis(sql="""SELECT hex_id, geom FROM hexagons;""", con=engine)
-        print(f"Number of hexagons: {len(self.hexagons)}")
+        print('Loading DeSO zones...')
+        self.zones = gpd.GeoDataFrame.from_postgis(sql="""SELECT deso, geom FROM zones;""", con=engine)
+        self.zones = self.zones.to_crs(4326)
+        print(f"Number of DeSO zones: {len(self.zones)}")
 
-    def mobi_data_processing(self):
-        # Add time-related columns (h_s, dur, holiday). weekday
-        print('Mobility data processing: add time-related columns (h_s, dur, holiday).')
-        self.mobi_data = preprocess.mobi_data_time_enrich(self.mobi_data)
-
+    def mobi_data_weight_processing(self):
         # Add temporal weight column to visits (wt)
         print('Mobility data processing: add temporal weight column to visits (wt).')
         self.mobi_data = preprocess.record_weights(self.mobi_data)
 
         # Add individual weight (wt_p)
         print('Mobility data processing: add individual weight (wt_p).')
-        engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
-        df_wt = pd.read_sql(sql="""SELECT uid, wt FROM segregation.indi_mobi_resi_seg_metrics;""", con=engine)
-        df_wt = df_wt.rename(columns={'wt': 'wt_p'})
-        self.mobi_data = pd.merge(self.mobi_data, df_wt, on=['uid'], how='left')
+        self.mobi_data = pd.merge(self.mobi_data, self.home[['uid', 'wt_p']], on=['uid'], how='left')
 
         # Add total weight
         print('Mobility data processing: add total weight (wt_total).')
@@ -127,14 +137,15 @@ class MobilitySegregationPlace(MobilityMeasuresIndividual):
         print('Converting mobility data into Points...')
         gdf = preprocess.df2gdf_point(self.mobi_data.loc[:, ['lng', 'lat']].drop_duplicates(subset=['lng', 'lat']),
                                       'lng', 'lat', crs=4326, drop=False)
-        # Hexagonal level
-        print('Finding hexagons...')
-        gdf_hex = gpd.sjoin(gdf, self.hexagons)
-        self.mobi_data = pd.merge(self.mobi_data, gdf_hex.loc[:, ['lng', 'lat', 'hex_id']],
+        # DeSO level
+        print('Finding DeSO zones...')
+        gdf_zones = gpd.sjoin(gdf, self.zones)
+        self.mobi_data = pd.merge(self.mobi_data, gdf_zones.loc[:, ['lng', 'lat', 'deso']],
                                   on=['lng', 'lat'], how='left')
 
-    def add_temporal_unit(self, num_groups=48):
+    def add_temporal_unit(self, num_groups=48, save=False):
         # Temporal unit
+        # This function requires the covered stays that last less than 12 hours
         # Create bins and add sequence to bins
         print('Create bins and add sequence to bins.')
         df = pd.DataFrame({'time': [x / (num_groups/24) for x in range(0, num_groups + 1)]})
@@ -147,25 +158,47 @@ class MobilitySegregationPlace(MobilityMeasuresIndividual):
 
         # Binning time in hours into groups
         print('Binning time in hours into groups (time_bin)...')
+
         def time_span(row):
             span = pd.cut([row['h_s'], min(row['h_s'] + row['dur'] / 60, 24)], bins, right=True, include_lowest=True)
             time_seq_list = [time_bins[ele] for ele in span]
-            return list(range(time_seq_list[0], time_seq_list[1] + 1))
-
-        self.mobi_data.loc[:, 'gp'] = np.random.randint(multiprocessing.cpu_count(),
-                                                        size=len(self.mobi_data))
+            seq = list(range(time_seq_list[0], time_seq_list[1] + 1))
+            if row['h_s'] + row['dur'] / 60 > 24:
+                span2 = pd.cut([0, row['h_s'] + row['dur'] / 60 - 24], bins, right=True, include_lowest=True)
+                time_seq_list2 = [time_bins[ele] for ele in span2]
+                seq2 = list(range(time_seq_list2[0], time_seq_list2[1] + 1))
+                seq = seq2 + seq
+            return seq
 
         def parallel_func(df):
             df.loc[:, 'time_seq'] = df.apply(lambda row: time_span(row), axis=1)
             df = df.explode('time_seq')
             return df
 
-        restl = p_map(parallel_func, [g for _, g in self.mobi_data.groupby('gp', group_keys=True)])
+        def time_span_compact(row):
+            span = pd.cut([row['h_s'], min(row['h_s'] + row['dur'] / 60, 24)], bins, right=True, include_lowest=True)
+            time_seq_list = [time_bins[ele] for ele in span]
+            if row['h_s'] + row['dur'] / 60 > 24:
+                span2 = pd.cut([0, row['h_s'] + row['dur'] / 60 - 24], bins, right=True, include_lowest=True)
+                time_seq_list2 = [time_bins[ele] for ele in span2]
+                time_seq_list = time_seq_list2 + time_seq_list
+            return time_seq_list
+
+        def parallel_func_compact(df):
+            df.loc[:, 'time_span'] = df.apply(lambda row: time_span_compact(row), axis=1)
+            return df
+
+        self.mobi_data.loc[:, 'gp'] = np.random.randint(multiprocessing.cpu_count(),
+                                                        size=len(self.mobi_data))
+        restl = p_map(parallel_func_compact, [g for _, g in self.mobi_data.groupby('gp', group_keys=True)])
         self.mobi_data = pd.concat(restl)
         self.mobi_data = self.mobi_data.drop(columns=['gp'])
 
-        print('Save the data...')
-        engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
-        self.mobi_data.to_sql('mobi_seg_hexagons_raw', engine, schema='segregation', index=False,
-                  method='multi', if_exists='append', chunksize=10000)
+        if save:
+            self.mobi_data = self.mobi_data.loc[:, ['uid', 'lat', 'lng', 'holiday', 'weekday', 'wt_total',
+                                                    'deso', 'time_span']]
+            print('Save the data...')
+            engine = sqlalchemy.create_engine(
+                f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+            self.mobi_data.to_sql('mobi_seg_deso_raw', engine, schema='segregation', index=False,
+                      method='multi', if_exists='append', chunksize=10000)

@@ -3,7 +3,6 @@ import io, os
 from datetime import date
 import subprocess
 import yaml
-import geopandas as gpd
 from shapely.geometry import mapping
 import json
 import requests as req

@@ -1,10 +1,8 @@
 import pandas as pd
-import geopandas as gpd
 from geoalchemy2 import Geometry, WKTElement
 import os
 import subprocess
 import numpy as np
-import osmnx as ox
 import yaml
 import sqlalchemy
 import time
@@ -13,9 +11,6 @@ from geopandas import GeoDataFrame
 from shapely.geometry import Point
 from math import radians, cos, sin, asin, sqrt
 from timezonefinder import TimezoneFinder
-from datetime import datetime
-from p_tqdm import p_map
-import multiprocessing
 from infostop import Infostop
 # Set up infostop parameters
 R1, R2, MIN_STAY, MAX_TIME_BETWEEN = 30, 30, 15, 12  # meters, meters, minutes, hours
@@ -155,32 +150,6 @@ def raw2chunk2db(file, user, password, port, db_name, table_name, schema_name, f
     end = time.time()
     print(end - start)
     return df
-
-
-def osm_net_retrieve(bbox, network_type, folder='dbs\\geo', region=None):
-    """
-    Save two formats of network downloaded from OpenStreetMap (.graphml & .shp)
-    :param folder: where to save the downloaded data
-    :param bbox: bounding box for retrieving the network
-    :param network_type: "walk" or "drive"
-    :param osm_folder: where to save the network
-    :return: None
-    """
-    north, south, east, west = bbox
-    G = ox.graph_from_bbox(north, south, east, west, network_type=network_type)
-    ox.save_graphml(G, filepath=os.path.join(ROOT_dir, folder, network_type + f'_network_{region}.graphml'))
-    gdf = ox.graph_to_gdfs(G)
-    edge = gdf[1]
-    edge = edge.loc[:, ['geometry', 'highway', 'junction', 'length', 'maxspeed', 'name', 'oneway',
-                        'osmid', 'u', 'v', 'width']]
-
-    fields = ['highway', 'junction', 'length', 'maxspeed', 'name', 'oneway',
-              'osmid', 'u', 'v', 'width']
-    df_inter = pd.DataFrame()
-    for f in fields:
-        df_inter[f] = edge[f].astype(str)
-    gdf_edge = gpd.GeoDataFrame(df_inter, geometry=edge["geometry"])
-    gdf_edge.to_file(os.path.join(ROOT_dir, folder, network_type + f'_network_{region}.shp'))
 
 
 def dump2db_df(df, user, password, port, db_name, table_name, schema_name):

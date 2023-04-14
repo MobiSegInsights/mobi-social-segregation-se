@@ -92,7 +92,7 @@ class MobiSegAggregation:
 
         grps = ['weekday', 'holiday', 'deso']
         df_g = self.mobi_data[grps].drop_duplicates(subset=grps)
-        df_g.loc[:, 'gp'] = np.random.randint(1, 31, df_g.shape[0])
+        df_g.loc[:, 'gp'] = np.random.randint(1, 21, df_g.shape[0])
         self.mobi_data = pd.merge(self.mobi_data, df_g, on=grps, how='left')
         print('Calculate metrics of each spatiotemporal unit')
 

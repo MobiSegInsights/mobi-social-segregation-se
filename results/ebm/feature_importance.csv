@@ -1,0 +1,12 @@
+Name,Color,Low income,Rank,High income
+Prob. born outside Sweden,steelblue,0.013174966702404,1.0,0.0028986401079972
+Median distance from home,coral,0.0116605115877159,2.0,0.0034746679745463
+Prob. in lowest income group,steelblue,0.0113754602118499,3.0,0.0055297676897373
+Residential income segregation,steelblue,0.0089859498924382,4.0,0.0054915454897667
+Job accessibility by car,darkgreen,0.0084847299749566,5.0,0.0058813572139573
+No. of unique locations visited,coral,0.0074721566820152,6.0,0.0085846247037633
+Transit accessibility by walking,darkgreen,0.0071358573037369,7.0,0.0038237773697141
+Prob. of owning a car,steelblue,0.0070213907869359,8.0,0.003514276349082
+Job density at residence,darkgreen,0.0065936273870747,9.0,0.0063977719441412
+Average displacement,coral,0.0061755043184897,10.0,0.0043497313750519
+Pedestrian network density at residence,darkgreen,0.00595742568748,12.0,0.0041864967836592

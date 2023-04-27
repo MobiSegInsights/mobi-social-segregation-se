@@ -1,0 +1,25 @@
+Name,Color,Score
+No. of unique locations visited,coral,0.008584624703763385
+Job density at residence,darkgreen,0.006397771944141208
+Job accessibility by car,darkgreen,0.005881357213957335
+Prob. in lowest income group,steelblue,0.00552976768973734
+Residential income segregation,steelblue,0.005491545489766729
+Average displacement,coral,0.004349731375051953
+Pedestrian network density at residence,darkgreen,0.004186496783659279
+Transit accessibility by walking,darkgreen,0.003823777369714145
+Prob. of owning a car,steelblue,0.0035142763490820213
+Median distance from home,coral,0.003474667974546364
+Non-holiday,purple,0.003189018773362916
+Holiday,purple,0.0031571285856292794
+Prob. born outside Sweden,steelblue,0.0028986401079972167
+Radius of gyration,coral,0.002519428781469202
+No. of visits,coral,0.002133545838355365
+GSI at residence,darkgreen,0.0021149147813155716
+Transit stop density at residence,darkgreen,0.0017856055494568724
+Median distance from home & Job accessibility by car,black,0.0014850620893797743
+Job accessibility by car & Pedestrian network density at residence,black,0.0014533755472637656
+Prob. of owning a car & Job accessibility by car,black,0.0013479166935263316
+Job accessibility by car & GSI at residence,black,0.0012720686294673115
+Prob. in lowest income group & Residential income segregation,black,0.0012623211550364393
+Weekend,purple,0.000996231548086263
+Weekday,purple,0.0009862692326053856

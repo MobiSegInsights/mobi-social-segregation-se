@@ -17,7 +17,7 @@ library(scales)
 options(scipen=10000)
 
 # Load temporal profile of MAD
-df.tempo <- read.csv('../../results/activity_patterns_mad.csv')
+df.tempo <- read.csv('results/activity_patterns_mad.csv')
 df.tempo$activity <- plyr::mapvalues(df.tempo$activity,
                                         from=c('all', 'holiday', 'non_holiday'),
                                         to=c("Total","Holiday","Non-holiday"))
@@ -30,6 +30,9 @@ g1 <- ggplot(data = df.tempo) +
   theme_minimal() +
   theme(plot.margin = margin(1,1,0,0, "cm"),
         legend.position = 'top')
+
+ggsave(filename = "figures/stays_tempo_mad.png", plot=g1,
+       width = 7, height = 4, unit = "in", dpi = 300)
 
 # Load temporal profile of MAD
 df.tempo.sv <- read.csv('../../results/activity_patterns_survey.csv')

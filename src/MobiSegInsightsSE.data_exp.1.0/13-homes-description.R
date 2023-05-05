@@ -17,7 +17,7 @@ library(DBI)
 library(scales)
 
 # Load detected home from the database
-keys_manager <- read_yaml('../../dbs/keys.yaml')
+keys_manager <- read_yaml('dbs/keys.yaml')
 user <- keys_manager$database$user
 password <- keys_manager$database$password
 port <- keys_manager$database$port
@@ -29,7 +29,7 @@ con <- DBI::dbConnect(RPostgres::Postgres(),
                       password = password,
                       port = port)
 df <- dbGetQuery(con, 'SELECT * FROM public.home_p')
-zones <- read_sf('../../dbs/DeSO/DeSO_2018_v2.shp')[, c('deso', 'befolkning', 'geometry')]
+zones <- read_sf('dbs/DeSO/DeSO_2018_v2.shp')[, c('deso', 'befolkning', 'geometry')]
 df.pop <- df %>%
   group_by(deso) %>%
   count()
@@ -68,10 +68,10 @@ names(bbox) <- c("left", "bottom", "right", "top")
 stockholm_basemap <- get_stamenmap(bbox, maptype="toner-lite", zoom = 16)
 
 g3 <- ggmap(stockholm_basemap) +
-  geom_sf(data = abnormal_zones_stockholm, aes(fill=pop_share),
-          color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
-  scale_fill_gradient(low = "darkblue", high = "yellow", trans = "log",
-                      name='Population (%)') +
+  geom_sf(data = abnormal_zones_stockholm,
+          color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE, fill='yellow') +
+  # scale_fill_gradient(low = "darkblue", high = "yellow", trans = "log",
+  #                     name='Population (%)') +
   theme_void() +
   theme(plot.margin = margin(1,1,0,0, "cm"))
 
@@ -83,14 +83,31 @@ names(bbox) <- c("left", "bottom", "right", "top")
 vg_basemap <- get_stamenmap(bbox, maptype="toner-lite", zoom = 16)
 
 g4 <- ggmap(vg_basemap) +
-  geom_sf(data = abnormal_zones_vg, aes(fill=pop_share),
-          color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
-  scale_fill_gradient(low = "darkblue", high = "yellow", trans = "log",
-                      name='Population (%)') +
+  geom_sf(data = abnormal_zones_vg,
+          color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE, fill='yellow') +
+  # scale_fill_gradient(low = "darkblue", high = "yellow", trans = "log",
+  #                     name='Population (%)') +
   theme_void() +
   theme(plot.margin = margin(1,1,0,0, "cm"))
 
-G <- ggarrange(g1, g2, g3, g4, ncol = 2, nrow = 2, labels = c('(a)', '(b)', '(c)', '(d)'))
-ggsave(filename = "../../figures/homes_desc_sub.png", plot=G,
+abnormal_zones_ss <- zones.pop[(zones.pop$pop_share > 100) &
+                                 (zones.pop$deso_5 %in% c('1980C')),]
+abnormal_zones_ss <- st_transform(abnormal_zones_ss, 4326)
+bbox <- st_bbox(abnormal_zones_ss)
+names(bbox) <- c("left", "bottom", "right", "top")
+ss_basemap <- get_stamenmap(bbox, maptype="toner-lite", zoom = 16)
+
+g5 <- ggmap(ss_basemap) +
+  geom_sf(data = abnormal_zones_ss,
+          color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE, fill='yellow') +
+  # scale_fill_gradient(low = "darkblue", high = "yellow", trans = "log",
+  #                     name='Population (%)') +
+  theme_void() +
+  theme(plot.margin = margin(1,1,0,0, "cm"))
+
+G1 <- ggarrange(g1, g2, ncol = 2, nrow = 1, widths = c(0.7, 0.3), labels = c('(a)', '(b)'))
+G2 <- ggarrange(g3, g5, g4, ncol = 3, nrow = 1, labels = c('(c)', '(d)', '(e)'))
+G <- ggarrange(G1, G2, ncol = 1, nrow = 2)
+ggsave(filename = "figures/homes_desc_sub.png", plot=G,
        width = 12, height = 8, unit = "in", dpi = 300)
 # st_write(zones.pop, 'results/zones_homes_2019.shp')

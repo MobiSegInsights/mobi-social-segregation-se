@@ -40,8 +40,10 @@ class MobiSegAggregation:
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
         self.mobi_metrics = pd.read_sql(sql='''SELECT * FROM mobility.indi_mobi_metrics_p;''', con=engine)
-        self.socio_metrics = pd.read_sql(sql='''SELECT zone, income_q1, income_q2, income_q3, income_q4
+        self.socio_metrics = pd.read_sql(sql='''SELECT zone, income_q1, income_q2, income_q3, income_q4, birth_se, pop
                                                 FROM grids;''', con=engine)
+        self.socio_metrics.loc[:, 'fb'] = self.socio_metrics.loc[:, 'pop'] - self.socio_metrics.loc[:, 'birth_se']
+        self.socio_metrics = self.socio_metrics.rename(columns={'birth_se': 'db'}).drop(columns=['pop'])
         df_sup = pd.read_sql(sql='''SELECT zone, "Lowest income group", "Not Sweden"
                                     FROM grid_stats;''', con=engine)
         self.socio_metrics = self.socio_metrics.loc[self.socio_metrics.zone.isin(self.mobi_metrics.zone), :]
@@ -82,6 +84,9 @@ class MobiSegAggregation:
             s_i = n / (2 * n - 2) * suma
             return s_i
 
+        def ice(wt_b=4.1133, ai=None, bi=None):
+            return (ai - bi * wt_b) / (ai + bi * wt_b)
+
         def unit_weighted_median(data):
             # hex_id_ = data.hex_id.values[0]
             # weekday_ = data['weekday'].values[0]
@@ -103,6 +108,9 @@ class MobiSegAggregation:
             sum_ = sum((q1, q2, q3, q4))
             q1, q2, q3, q4 = q1/sum_, q2/sum_, q3/sum_, q4/sum_
             metrics_dict['evenness_income'] = income_evenness_agg(n=4, q_grps=(q1, q2, q3, q4))
+            # Modified ICE
+            ai, bi = sum(data['db'] * data['wt_total']), sum(data['fb'] * data['wt_total'])
+            metrics_dict['ice_birth'] = ice(ai=ai, bi=bi)
             return pd.Series(metrics_dict)
 
         grps = ['weekday', 'holiday', 'deso']

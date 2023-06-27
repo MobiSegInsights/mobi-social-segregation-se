@@ -74,7 +74,7 @@ class MobiSegAggregationIndividual:
         print('Load income unevenness at DeSO zones...')
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
-        self.zonal_seg = pd.read_sql(sql='''SELECT weekday, holiday, deso, time_seq, num_unique_uid, evenness_income
+        self.zonal_seg = pd.read_sql(sql='''SELECT weekday, holiday, deso, time_seq, num_unique_uid, evenness_income, ice_birth
                                             FROM segregation.mobi_seg_deso;''', con=engine)
 
     def aggregating_metrics_indi(self):
@@ -87,6 +87,7 @@ class MobiSegAggregationIndividual:
         def time_seq_median(data):
             return pd.Series({"time_seq": data.time_seq.values[0],
                               'evenness_income': data.evenness_income.median(),
+                              'ice_birth': data.ice_birth.median(),
                               'num_coexistence': data.num_unique_uid.mean()})
 
         def by_time(data):

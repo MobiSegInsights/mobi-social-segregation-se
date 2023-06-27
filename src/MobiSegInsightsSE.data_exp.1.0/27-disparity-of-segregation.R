@@ -28,13 +28,14 @@ feature_dict <- list(weekend='Weekend', weekday='Weekday',
                      car_ownership='Prob. of owning a car',
                      cum_jobs='Job accessibility by car',
                      cum_stops='Transit accessibility by walking',
-                     evenness_income_resi='Residential income segregation',
+#                     evenness_income_resi='Residential income segregation',
+                     ice_birth='Nativity segregation',
                      num_jobs='Job density at residence',
                      num_stops='Transit stop density at residence',
                      gsi='GSI at residence',
                      length_density='Pedestrian network density at residence')
 
-df.vis <- as.data.frame(read_parquet('results/data4model_individual.parquet'))
+df.vis <- as.data.frame(read_parquet('results/seg_disparity_exp_nativity.parquet'))
 
 fb.tre.low <- 0.4
 fb.tre.high <- 0.1
@@ -43,15 +44,15 @@ df.vis$income_gp[df.vis$`Lowest income group` > fb.tre.low] <- "Low income"
 df.vis$income_gp[df.vis$`Lowest income group` <= fb.tre.high] <- "High income"
 #Remove rows with NA's using rowSums()
 df.vis <- df.vis[rowSums(is.na(df.vis)) == 0, ]
-df.vis$disparity <- df.vis$evenness_income - df.vis$evenness_income_resi
+df.vis$disparity <- df.vis$Experienced - df.vis$Residential
 
-g1 <- ggplot(data=df.vis, aes(x=evenness_income_resi, y=disparity, color=income_gp)) +
+g1 <- ggplot(data=df.vis, aes(x=Residential, y=disparity, color=income_gp)) +
   scale_color_manual(name='Income group',
                  breaks=c('High income', 'Low income'),
                  values=c('High income'='steelblue', 'Low income'='orange')) +
   geom_hdr_lines(show.legend = T) +
   #geom_point(size=1, alpha=0.7) +
-  labs(y = 'Experienced - Residential', x = 'Residential income segregation') +
+  labs(y = 'Experienced - Residential', x = 'Residential nativity segregation') +
   theme_minimal() +
   theme(legend.position="top")
 
@@ -67,29 +68,29 @@ con <- DBI::dbConnect(RPostgres::Postgres(),
                       user = user,
                       password = password,
                       port = port)
-df.deso <- dbGetQuery(con, 'SELECT deso, "Lowest income group", evenness_income
+df.deso <- dbGetQuery(con, 'SELECT deso, "Lowest income group", ice_birth
                                      FROM segregation.mobi_seg_deso')
-df.deso.resi <- dbGetQuery(con, "SELECT region AS deso, evenness AS evenness_income_resi
-                                     FROM segregation.resi_seg_deso WHERE var='income'")
+df.deso.resi <- dbGetQuery(con, "SELECT region AS deso, ice AS ice_birth_resi
+                                     FROM segregation.resi_seg_deso WHERE var='birth_region'")
 df.deso <- merge(df.deso, df.deso.resi, on='deso', how='left')
 df.deso$income_gp <- NA
 df.deso$income_gp[df.deso$`Lowest income group` > fb.tre.low] <- "Low income"
 df.deso$income_gp[df.deso$`Lowest income group` <= fb.tre.high] <- "High income"
 #Remove rows with NA's using rowSums()
 df.deso <- df.deso[rowSums(is.na(df.deso)) == 0, ]
-df.deso$disparity <- df.deso$evenness_income - df.deso$evenness_income_resi
+df.deso$disparity <- df.deso$ice_birth - df.deso$ice_birth_resi
 
-g2 <- ggplot(data=df.deso, aes(x=evenness_income_resi, y=disparity, color=income_gp)) +
+g2 <- ggplot(data=df.deso, aes(x=ice_birth_resi, y=disparity, color=income_gp)) +
   scale_color_manual(name='Income group',
                  breaks=c('High income', 'Low income'),
                  values=c('High income'='steelblue', 'Low income'='orange')) +
   geom_hdr_lines(show.legend = T) +
   #geom_point(size=1, alpha=0.7) +
-  labs(y = 'Visiting - Residential', x = 'Residential income segregation') +
+  labs(y = 'Visiting - Residential', x = 'Residential nativity segregation') +
   theme_minimal() +
   theme(legend.position="top")
 
 G <- ggarrange(g1, g2, common.legend = TRUE, legend="bottom",
                ncol = 2, nrow = 1, labels = c('(a)', '(b)'))
-ggsave(filename = paste0("figures/", 'seg_disparity.png'), plot=G,
+ggsave(filename = paste0("figures/", 'seg_disparity_ice.png'), plot=G,
        width = 10, height = 6, unit = "in", dpi = 300)

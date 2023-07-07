@@ -35,7 +35,7 @@ feature_dict <- list(weekend='Weekend', weekday='Weekday',
                      gsi='GSI at residence',
                      length_density='Pedestrian network density at residence')
 
-df.vis <- as.data.frame(read_parquet('results/seg_disparity_exp_nativity.parquet'))
+df.vis <- as.data.frame(read_parquet('results/data4model_individual.parquet'))
 
 fb.tre.low <- 0.4
 fb.tre.high <- 0.1
@@ -44,9 +44,9 @@ df.vis$income_gp[df.vis$`Lowest income group` > fb.tre.low] <- "Low income"
 df.vis$income_gp[df.vis$`Lowest income group` <= fb.tre.high] <- "High income"
 #Remove rows with NA's using rowSums()
 df.vis <- df.vis[rowSums(is.na(df.vis)) == 0, ]
-df.vis$disparity <- df.vis$Experienced - df.vis$Residential
+df.vis$disparity <- df.vis$ice_birth - df.vis$ice_birth_resi
 
-g1 <- ggplot(data=df.vis, aes(x=Residential, y=disparity, color=income_gp)) +
+g1 <- ggplot(data=df.vis, aes(x=ice_birth_resi, y=disparity, color=income_gp)) +
   scale_color_manual(name='Income group',
                  breaks=c('High income', 'Low income'),
                  values=c('High income'='steelblue', 'Low income'='orange')) +
@@ -57,22 +57,7 @@ g1 <- ggplot(data=df.vis, aes(x=Residential, y=disparity, color=income_gp)) +
   theme(legend.position="top")
 
 #------------ Visiting segregion --------------
-keys_manager <- read_yaml('./dbs/keys.yaml')
-user <- keys_manager$database$user
-password <- keys_manager$database$password
-port <- keys_manager$database$port
-db_name <- keys_manager$database$name
-con <- DBI::dbConnect(RPostgres::Postgres(),
-                      host = "localhost",
-                      dbname = db_name,
-                      user = user,
-                      password = password,
-                      port = port)
-df.deso <- dbGetQuery(con, 'SELECT deso, "Lowest income group", ice_birth
-                                     FROM segregation.mobi_seg_deso')
-df.deso.resi <- dbGetQuery(con, "SELECT region AS deso, ice AS ice_birth_resi
-                                     FROM segregation.resi_seg_deso WHERE var='birth_region'")
-df.deso <- merge(df.deso, df.deso.resi, on='deso', how='left')
+df.deso <- as.data.frame(read_parquet('results/data4model_agg.parquet'))
 df.deso$income_gp <- NA
 df.deso$income_gp[df.deso$`Lowest income group` > fb.tre.low] <- "Low income"
 df.deso$income_gp[df.deso$`Lowest income group` <= fb.tre.high] <- "High income"

@@ -17,26 +17,11 @@ library(ggraph)
 library(arrow)
 library(scales)
 library(ggExtra)
-library(yaml)
-library(DBI)
 options(scipen=10000)
-
-#------------ Data location --------------
-keys_manager <- read_yaml('./dbs/keys.yaml')
-user <- keys_manager$database$user
-password <- keys_manager$database$password
-port <- keys_manager$database$port
-db_name <- keys_manager$database$name
-con <- DBI::dbConnect(RPostgres::Postgres(),
-                      host = "localhost",
-                      dbname = db_name,
-                      user = user,
-                      password = password,
-                      port = port)
 
 #------------ Residential vs. visiting --------------
 fake_scico <- scico(3, palette = "vik")
-df.deso <- as.data.frame(read_parquet('results/seg_resi_visi.parquet'))
+df.deso <- as.data.frame(read_parquet('results/data4model_agg.parquet'))
 zones <- read_sf('dbs/DeSO/DeSO_2018_v2.shp')[, c('deso', 'geometry')]
 zones.seg <- merge(zones, df.deso, on='deso')
 # 01-Stockholm, 14-Gothenburg, 12-Malmö
@@ -69,7 +54,7 @@ seg.name <- 'Nativity segregation (ICE)'
 # --- Residential on the map ---
 my_breaks <-seq(-1, 1, 0.2)
 g1 <- ggplot(zones.seg) +
-  geom_sf(aes(fill=Residential), color = NA, alpha=1, show.legend = T) +
+  geom_sf(aes(fill=ice_birth_resi), color = NA, alpha=1, show.legend = T) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
                        breaks = my_breaks, labels = my_breaks) +
@@ -80,7 +65,7 @@ g1 <- ggplot(zones.seg) +
   theme(plot.margin = margin(1,1,0,0, "cm"), legend.key.width = unit(2.5, "cm"))
 
 g2 <- ggmap(stockholm_basemap) +
-  geom_sf(data = stockholm, aes(fill=Residential),
+  geom_sf(data = stockholm, aes(fill=ice_birth_resi),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -89,7 +74,7 @@ g2 <- ggmap(stockholm_basemap) +
   theme(plot.margin = margin(1,1,0,0, "cm"), legend.key.width = unit(2.5, "cm"))
 
 g3 <- ggmap(gothenburg_basemap) +
-  geom_sf(data = gothenburg, aes(fill=Residential),
+  geom_sf(data = gothenburg, aes(fill=ice_birth_resi),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -98,7 +83,7 @@ g3 <- ggmap(gothenburg_basemap) +
   theme(plot.margin = margin(1,1,0,0, "cm"), legend.key.width = unit(2.5, "cm"))
 
 g4 <- ggmap(malmo_basemap) +
-  geom_sf(data = malmo, aes(fill=Residential),
+  geom_sf(data = malmo, aes(fill=ice_birth_resi),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -108,7 +93,7 @@ g4 <- ggmap(malmo_basemap) +
 
 # --- Visiting on the map ---
 g21 <- ggplot(zones.seg) +
-  geom_sf(aes(fill=Visiting), color = NA, alpha=1, show.legend = T) +
+  geom_sf(aes(fill=ice_birth), color = NA, alpha=1, show.legend = T) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
                        breaks = my_breaks, labels = my_breaks) +
@@ -119,7 +104,7 @@ g21 <- ggplot(zones.seg) +
   theme(plot.margin = margin(1,1,0,0, "cm"), legend.key.width = unit(2.5, "cm"))
 
 g22 <- ggmap(stockholm_basemap) +
-  geom_sf(data = stockholm, aes(fill=Visiting),
+  geom_sf(data = stockholm, aes(fill=ice_birth),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -128,7 +113,7 @@ g22 <- ggmap(stockholm_basemap) +
   theme(plot.margin = margin(1,1,0,0, "cm"), legend.key.width = unit(2.5, "cm"))
 
 g23 <- ggmap(gothenburg_basemap) +
-  geom_sf(data = gothenburg, aes(fill=Visiting),
+  geom_sf(data = gothenburg, aes(fill=ice_birth),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -137,7 +122,7 @@ g23 <- ggmap(gothenburg_basemap) +
   theme(plot.margin = margin(1,1,0,0, "cm"), legend.key.width = unit(2.5, "cm"))
 
 g24 <- ggmap(malmo_basemap) +
-  geom_sf(data = malmo, aes(fill=Visiting),
+  geom_sf(data = malmo, aes(fill=ice_birth),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -158,7 +143,7 @@ ggsave(filename = "figures/seg_desc_map_thr_ice.png", plot=G,
 my_breaks <- seq(-1, 1, 0.2)
 seg.name.disp <- 'Disparity in segregation measures'
 g32 <- ggmap(stockholm_basemap) +
-  geom_sf(data = stockholm, aes(fill=Visiting-Residential),
+  geom_sf(data = stockholm, aes(fill=ice_birth-ice_birth_resi),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name.disp,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -167,7 +152,7 @@ g32 <- ggmap(stockholm_basemap) +
   theme(plot.margin = margin(1,1,0,0, "cm"))
 
 g33 <- ggmap(gothenburg_basemap) +
-  geom_sf(data = gothenburg, aes(fill=Visiting-Residential),
+  geom_sf(data = gothenburg, aes(fill=ice_birth-ice_birth_resi),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name.disp,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],
@@ -176,7 +161,7 @@ g33 <- ggmap(gothenburg_basemap) +
   theme(plot.margin = margin(1,1,0,0, "cm"))
 
 g34 <- ggmap(malmo_basemap) +
-  geom_sf(data = malmo, aes(fill=Visiting-Residential),
+  geom_sf(data = malmo, aes(fill=ice_birth-ice_birth_resi),
           color = NA, alpha=0.6, show.legend = T, inherit.aes = FALSE) +
   scale_fill_gradient2(name=seg.name.disp,
                        low = fake_scico[1], mid=fake_scico[2], high = fake_scico[3],

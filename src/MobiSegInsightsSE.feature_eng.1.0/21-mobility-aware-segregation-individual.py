@@ -39,14 +39,24 @@ class MobiSegAggregationIndividual:
         print('Loading individual mobility metrics and socio-economic attributes by housing grids...')
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+        # Individual weight
+        df_pop_wt = pd.read_sql(sql='''SELECT uid, wt_p FROM home_p;''', con=engine)
+
+        # Mobi characteristics
         self.mobi_metrics = pd.read_sql(sql='''SELECT * FROM mobility.indi_mobi_metrics_p;''', con=engine)
-        self.socio_metrics = pd.read_sql(sql='''SELECT zone, income_evenness
-                                                FROM segregation.resi_seg_grid;''', con=engine).\
-            rename(columns={'income_evenness': 'evenness_income_resi'})
-        df_sup = pd.read_sql(sql='''SELECT zone, "Lowest income group", "Not Sweden"
+
+        # Segregation metrics
+        self.socio_metrics = pd.merge(pd.read_sql(sql='''SELECT region, evenness AS evenness_income_resi
+                                                         FROM segregation.resi_seg_deso
+                                                         WHERE var='income';''', con=engine),
+                                      pd.read_sql(sql='''SELECT region, ice AS ice_birth_resi
+                                                         FROM segregation.resi_seg_deso
+                                                         WHERE var='birth_region';''', con=engine),
+                                      on='region', how='left'
+                                      )
+        df_sup = pd.read_sql(sql='''SELECT zone, "Lowest income group", "Not Sweden", "Other"
                                     FROM grid_stats;''', con=engine)
-        self.socio_metrics = self.socio_metrics.loc[self.socio_metrics.zone.isin(self.mobi_metrics.zone), :]
-        self.socio_metrics = pd.merge(self.socio_metrics, df_sup, on='zone', how='left')
+        self.socio_metrics = self.socio_metrics.loc[self.socio_metrics.region.isin(self.mobi_metrics.region), :]
 
         print('Add car ownership information by individual home deso zone')
         df_cars = pd.read_csv(os.path.join(ROOT_dir, 'dbs/DeSO/vehicles_2019.csv'), encoding='latin-1')
@@ -57,11 +67,12 @@ class MobiSegAggregationIndividual:
         self.mobi_metrics = pd.merge(self.mobi_metrics, df_cars[['region', 'car_ownership']], on='region')
 
         print('Collect individual data: mobi + socio.')
-        self.individual_data = pd.merge(self.mobi_metrics, self.socio_metrics, on='zone', how='left')
+        self.individual_data = pd.merge(self.mobi_metrics, self.socio_metrics, on='region', how='left')
+        self.individual_data = pd.merge(self.individual_data, df_sup, on='zone', how='left')
+        self.individual_data = pd.merge(self.individual_data, df_pop_wt, on='uid', how='left')
 
         print('Add individual residential accessibility metrics')
-        df_access = pd.read_sql("""SELECT uid, cum_jobs, cum_stops FROM built_env.access_grid;""",
-                                con=engine)
+        df_access = pd.read_sql("""SELECT uid, cum_jobs, cum_stops FROM built_env.access_grid;""", con=engine)
         self.individual_data = pd.merge(self.individual_data, df_access, on='uid', how='left')
         print(self.individual_data.iloc[0])
 
@@ -74,7 +85,8 @@ class MobiSegAggregationIndividual:
         print('Load income unevenness at DeSO zones...')
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
-        self.zonal_seg = pd.read_sql(sql='''SELECT weekday, holiday, deso, time_seq, num_unique_uid, evenness_income, ice_birth
+        self.zonal_seg = pd.read_sql(sql='''SELECT weekday, holiday, deso, time_seq, num_unique_uid, 
+                                            evenness_income, ice_birth
                                             FROM segregation.mobi_seg_deso;''', con=engine)
 
     def aggregating_metrics_indi(self):

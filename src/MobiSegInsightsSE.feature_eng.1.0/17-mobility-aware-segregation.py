@@ -40,11 +40,10 @@ class MobiSegAggregation:
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
         self.mobi_metrics = pd.read_sql(sql='''SELECT * FROM mobility.indi_mobi_metrics_p;''', con=engine)
-        self.socio_metrics = pd.read_sql(sql='''SELECT zone, income_q1, income_q2, income_q3, income_q4, birth_se, pop
+        self.socio_metrics = pd.read_sql(sql='''SELECT zone, income_q1, income_q2, income_q3, income_q4, 
+                                                birth_se, birth_other, pop
                                                 FROM grids;''', con=engine)
-        self.socio_metrics.loc[:, 'fb'] = self.socio_metrics.loc[:, 'pop'] - self.socio_metrics.loc[:, 'birth_se']
-        self.socio_metrics = self.socio_metrics.rename(columns={'birth_se': 'db'}).drop(columns=['pop'])
-        df_sup = pd.read_sql(sql='''SELECT zone, "Lowest income group", "Not Sweden"
+        df_sup = pd.read_sql(sql='''SELECT zone, "Lowest income group", "Not Sweden", "Other"
                                     FROM grid_stats;''', con=engine)
         self.socio_metrics = self.socio_metrics.loc[self.socio_metrics.zone.isin(self.mobi_metrics.zone), :]
         self.socio_metrics = pd.merge(self.socio_metrics, df_sup, on='zone', how='left')
@@ -75,8 +74,8 @@ class MobiSegAggregation:
 
     def aggregating_metrics(self):
         cols = ['number_of_locations', 'number_of_visits',
-                'average_displacement', 'radius_of_gyration',
-                'median_distance_from_home', 'Not Sweden', 'Lowest income group',
+                'average_displacement', 'radius_of_gyration', 'median_distance_from_home',
+                'Not Sweden', 'Other', 'Lowest income group',
                 'cum_jobs', 'cum_stops', 'car_ownership']
 
         def income_evenness_agg(n=4, q_grps=None):
@@ -84,8 +83,10 @@ class MobiSegAggregation:
             s_i = n / (2 * n - 2) * suma
             return s_i
 
-        def ice(wt_b=4.1133, ai=None, bi=None):
-            return (ai - bi * wt_b) / (ai + bi * wt_b)
+        def ice(ai=None, bi=None, popi=None, share_a=0.8044332515556147, share_b=0.11067529894925136):
+            oi = popi - ai - bi
+            share_o = 1 - share_a - share_b
+            return (ai / share_a - bi / share_b) / (ai / share_a + bi / share_b + oi / share_o)
 
         def unit_weighted_median(data):
             # hex_id_ = data.hex_id.values[0]
@@ -109,8 +110,10 @@ class MobiSegAggregation:
             q1, q2, q3, q4 = q1/sum_, q2/sum_, q3/sum_, q4/sum_
             metrics_dict['evenness_income'] = income_evenness_agg(n=4, q_grps=(q1, q2, q3, q4))
             # Modified ICE
-            ai, bi = sum(data['db'] * data['wt_total']), sum(data['fb'] * data['wt_total'])
-            metrics_dict['ice_birth'] = ice(ai=ai, bi=bi)
+            ai, bi, popi = sum(data['birth_se'] * data['wt_total']), \
+                         sum(data['birth_other'] * data['wt_total']), \
+                         sum(data['pop'] * data['wt_total'])
+            metrics_dict['ice_birth'] = ice(ai=ai, bi=bi, popi=popi)
             return pd.Series(metrics_dict)
 
         grps = ['weekday', 'holiday', 'deso']

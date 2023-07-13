@@ -1,5 +1,5 @@
 import sys
-import subprocess
+from pathlib import Path
 import os
 import pandas as pd
 import sqlalchemy
@@ -8,17 +8,9 @@ import ast
 from p_tqdm import p_map
 
 
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
-
-
-ROOT_dir = get_repo_root()
+ROOT_dir = Path(__file__).parent.parent
 sys.path.append(ROOT_dir)
-sys.path.insert(0, ROOT_dir + '/lib')
+sys.path.insert(0, os.path.join(ROOT_dir, '/lib'))
 
 from lib import preprocess as preprocess
 
@@ -38,7 +30,7 @@ class MobiSegAggregationIndividual:
     def load_individual_data(self):
         print('Loading individual mobility metrics and socio-economic attributes by housing grids...')
         engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
         # Individual weight
         df_pop_wt = pd.read_sql(sql='''SELECT uid, wt_p FROM home_p;''', con=engine)
 
@@ -84,7 +76,7 @@ class MobiSegAggregationIndividual:
     def load_zonal_data(self):
         print('Load income unevenness at DeSO zones...')
         engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
         self.zonal_seg = pd.read_sql(sql='''SELECT weekday, holiday, deso, time_seq, num_unique_uid, 
                                             evenness_income, ice_birth
                                             FROM segregation.mobi_seg_deso;''', con=engine)
@@ -132,7 +124,7 @@ class MobiSegAggregationIndividual:
             print(f'Merge individual attributes.')
             df = pd.merge(df, self.individual_data, on='uid', how='left')
             engine = sqlalchemy.create_engine(
-                f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+                f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
             df.to_sql('mobi_seg_deso_individual', engine, schema='segregation', index=False,
                       method='multi', if_exists='append', chunksize=10000)
 

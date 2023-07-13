@@ -1,5 +1,5 @@
 import sys
-import subprocess
+from pathlib import Path
 import os
 import pandas as pd
 import utm
@@ -8,17 +8,9 @@ from p_tqdm import p_map
 import numpy as np
 
 
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
-
-
-ROOT_dir = get_repo_root()
+ROOT_dir = Path(__file__).parent.parent
 sys.path.append(ROOT_dir)
-sys.path.insert(0, ROOT_dir + '/lib')
+sys.path.insert(0, os.path.join(ROOT_dir, 'lib'))
 
 
 def one_day_processing(path=None, target_file=None):

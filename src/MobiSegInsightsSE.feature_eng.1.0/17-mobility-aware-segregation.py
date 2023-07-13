@@ -1,25 +1,17 @@
 import sys
-import subprocess
+from pathlib import Path
 import os
 import pandas as pd
 import sqlalchemy
-import weighted
+import wquantiles
 import numpy as np
 import ast
 from p_tqdm import p_map
 
 
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
-
-
-ROOT_dir = get_repo_root()
+ROOT_dir = Path(__file__).parent.parent
 sys.path.append(ROOT_dir)
-sys.path.insert(0, ROOT_dir + '/lib')
+sys.path.insert(0, os.path.join(ROOT_dir, 'lib'))
 
 from lib import metrics as mt
 from lib import preprocess as preprocess
@@ -38,7 +30,7 @@ class MobiSegAggregation:
     def load_data_and_process(self):
         print('Loading individual mobility metrics and socio-economic attributes by housing grids...')
         engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
         self.mobi_metrics = pd.read_sql(sql='''SELECT * FROM mobility.indi_mobi_metrics_p;''', con=engine)
         self.socio_metrics = pd.read_sql(sql='''SELECT zone, income_q1, income_q2, income_q3, income_q4, 
                                                 birth_se, birth_other, pop
@@ -102,7 +94,7 @@ class MobiSegAggregation:
                                 num_unique_uid=num_unique_uid)
             # Mobility patterns and segregation measures
             for v in cols:
-                metrics_dict[v] = weighted.median(data[v], data['wt_total'])
+                metrics_dict[v] = wquantiles.median(data[v], data['wt_total'])
             # Modified aggregation of income unevenness
             q1, q2, q3, q4 = sum(data['income_q1'] * data['wt_total']), sum(data['income_q2'] * data['wt_total']),\
                              sum(data['income_q3'] * data['wt_total']), sum(data['income_q4'] * data['wt_total'])
@@ -143,7 +135,7 @@ class MobiSegAggregation:
             rstl = p_map(by_time, [g for _, g in df.groupby('time_seq', group_keys=True)])
             df = pd.concat(rstl)
             engine = sqlalchemy.create_engine(
-                f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+                f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
             df.to_sql('mobi_seg_deso', engine, schema='segregation', index=False,
                       method='multi', if_exists='append', chunksize=10000)
 

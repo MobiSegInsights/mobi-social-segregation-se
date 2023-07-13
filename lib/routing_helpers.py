@@ -1,24 +1,15 @@
 import requests
 import io, os
 from datetime import date
-import subprocess
+from pathlib import Path
 import yaml
 from shapely.geometry import mapping
 import json
 import requests as req
 
 
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))  # os.getcwd()
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
-
-
-ROOT_dir = get_repo_root()
-
-with open(ROOT_dir + '/dbs/keys.yaml') as f:
+ROOT_dir = Path(__file__).parent.parent
+with open(os.path.join(ROOT_dir, 'dbs', 'keys.yaml')) as f:
     keys_manager = yaml.load(f, Loader=yaml.FullLoader)
 
 

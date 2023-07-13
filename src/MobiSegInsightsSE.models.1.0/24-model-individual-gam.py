@@ -1,5 +1,5 @@
 import os, sys
-import subprocess
+from pathlib import Path
 from interpret.glassbox import ExplainableBoostingRegressor
 from interpret.perf import RegressionPerf
 from sklearn.model_selection import train_test_split
@@ -10,17 +10,9 @@ import numpy as np
 import pickle
 
 
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
-
-
-ROOT_dir = get_repo_root()
+ROOT_dir = Path(__file__).parent.parent
 sys.path.append(ROOT_dir)
-sys.path.insert(0, ROOT_dir + '/lib')
+sys.path.insert(0, os.path.join(ROOT_dir, '/lib'))
 
 
 class GAMModel:

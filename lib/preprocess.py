@@ -1,7 +1,7 @@
 import pandas as pd
 from geoalchemy2 import Geometry, WKTElement
 import os
-import subprocess
+from pathlib import Path
 import numpy as np
 import yaml
 import sqlalchemy
@@ -11,77 +11,11 @@ from geopandas import GeoDataFrame
 from shapely.geometry import Point
 from math import radians, cos, sin, asin, sqrt
 from timezonefinder import TimezoneFinder
-from infostop import Infostop
-# Set up infostop parameters
-R1, R2, MIN_STAY, MAX_TIME_BETWEEN = 30, 30, 15, 12  # meters, meters, minutes, hours
-
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
 
 
-ROOT_dir = get_repo_root()
+ROOT_dir = Path(__file__).parent.parent
 with open(os.path.join(ROOT_dir, 'dbs', 'keys.yaml')) as f:
     keys_manager = yaml.load(f, Loader=yaml.FullLoader)
-
-
-def infostop_per_user(key, data):
-    model = Infostop(
-        r1=R1,
-        r2=R2,
-        label_singleton=True,
-        min_staying_time=MIN_STAY * 60,
-        max_time_between=MAX_TIME_BETWEEN * 60 * 60,
-        min_size=2,
-        min_spacial_resolution=0,
-        distance_metric='haversine',
-        weighted=False,
-        weight_exponent=1,
-        verbose=False, )
-    x = data.loc[~(((data['latitude'] > 84) | (data['latitude'] < -80)) | (
-                (data['longitude'] > 180) | (data['longitude'] < -180))), :]
-    x = x.sort_values(by='timestamp').drop_duplicates(subset=['latitude', 'longitude', 'timestamp']).reset_index(
-        drop=True)
-    x = x.dropna()
-    ##THE THING RECORDS A POINT EVERYTIME THE ACCELEROMETER REGISTER A CHANGE, SO ASSUME NO MOVE UP TO 12 hours
-    x['t_seg'] = x['timestamp'].shift(-1)
-    x.loc[x.index[-1], 't_seg'] = x.loc[x.index[-1], 'timestamp'] + 1
-    x['n'] = x.apply(lambda x: range(int(x['timestamp']),
-                                     min(int(x['t_seg']), x['timestamp'] + (MAX_TIME_BETWEEN * 60 * 60)),
-                                     (MAX_TIME_BETWEEN * 60 * 60 - 1)), axis=1)
-    x = x.explode('n')
-    x['timestamp'] = x['n'].astype(float)
-    x = x[['latitude', 'longitude', 'timestamp']].dropna()  # ,'timezone'
-
-    try:
-        labels = model.fit_predict(x[['latitude', 'longitude', 'timestamp']].values)
-    except:
-        return pd.DataFrame([], columns=['device_aid', 'timestamp', 'latitude', 'longitude', 'loc', 'stop_latitude',
-                                         'stop_longitude', 'interval'])  # ,'timezone'
-
-    label_medians = model.compute_label_medians()
-    x['loc'] = labels
-    x['same_loc'] = x['loc'] == x['loc'].shift()
-    # x['same_timezone'] = x['timezone']==x['timezone'].shift()
-    x['little_time'] = (x['timestamp'] - x['timestamp'].shift() < MAX_TIME_BETWEEN * 60 * 60)
-
-    x['interval'] = (~(x['same_loc'] &
-                       x['little_time'])).cumsum()  # & x['same_timezone']
-
-    latitudes = {k: v[0] for k, v in label_medians.items()}
-    longitudes = {k: v[1] for k, v in label_medians.items()}
-    x['stop_latitude'] = x['loc'].map(latitudes)
-    x['stop_longitude'] = x['loc'].map(longitudes)
-    x['device_aid'] = key[0]
-
-    # keep only stop locations
-    x = x[x['loc'] > 0].copy()
-
-    return x[['device_aid', 'timestamp', 'latitude', 'longitude', 'loc', 'stop_latitude', 'stop_longitude',
-              'interval']]  # ,'timezone'
 
 
 def convert_to_location_tz(row, _tf=TimezoneFinder()):
@@ -115,7 +49,8 @@ def raw2df2db(file, user, password, port, db_name, table_name, schema_name):
     A dataframe with each row a request record.
     """
     raw_folder = os.path.join(ROOT_dir, "dbs")
-    chunk_container = pd.read_csv(os.path.join(raw_folder, file + ".gz"), sep=',',
+    chunk_container = pd.read_csv(os.path.join(raw_folder, file + ".gz"),
+                                  sep=',',
                                   header=0,
                                   compression='gzip',
                                   chunksize=2000000,

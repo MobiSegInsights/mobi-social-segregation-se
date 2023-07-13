@@ -1,5 +1,5 @@
 import os
-import subprocess
+from pathlib import Path
 import yaml
 import sqlalchemy
 import pandas as pd
@@ -10,21 +10,12 @@ from skmob.measures.individual import radius_of_gyration, distance_straight_line
 from tqdm import tqdm
 from p_tqdm import p_map
 import multiprocessing
+from lib import preprocess as preprocess
 
 
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
-
-
-ROOT_dir = get_repo_root()
+ROOT_dir = Path(__file__).parent.parent
 with open(os.path.join(ROOT_dir, 'dbs', 'keys.yaml')) as f:
     keys_manager = yaml.load(f, Loader=yaml.FullLoader)
-
-from lib import preprocess as preprocess
 
 
 class MobilityMeasuresIndividual:

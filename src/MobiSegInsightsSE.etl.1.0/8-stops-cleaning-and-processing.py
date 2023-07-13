@@ -1,5 +1,5 @@
 import sys
-import subprocess
+from pathlib import Path
 import os
 import pandas as pd
 from tqdm import tqdm
@@ -11,20 +11,14 @@ import sqlalchemy
 import multiprocessing
 
 
-def get_repo_root():
-    """Get the root directory of the repo."""
-    dir_in_repo = os.path.dirname(os.path.abspath('__file__'))
-    return subprocess.check_output('git rev-parse --show-toplevel'.split(),
-                                   cwd=dir_in_repo,
-                                   universal_newlines=True).rstrip()
-
-
-ROOT_dir = get_repo_root()
+ROOT_dir = Path(__file__).parent.parent
 sys.path.append(ROOT_dir)
-sys.path.insert(0, ROOT_dir + '/lib')
+sys.path.insert(0, os.path.join(ROOT_dir, 'lib'))
+
 import preprocess
 
 se_box = (11.0273686052, 55.3617373725, 23.9033785336, 69.1062472602)
+
 
 def within_sweden_time(latitude, longitude):
     if (latitude >= se_box[1]) & (latitude <= se_box[3]):

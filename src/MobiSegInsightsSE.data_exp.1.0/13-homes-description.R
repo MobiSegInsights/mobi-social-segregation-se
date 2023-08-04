@@ -41,7 +41,7 @@ zones.pop <- zones.pop %>%
 g1 <- ggplot(zones.pop[zones.pop$pop_share < 100,]) +
   geom_point(aes(x=befolkning, y=n), show.legend = F,
              alpha=1, size=0.2, color='steelblue') +
-  labs(x='Population', y='Mobile devices') +
+  labs(x='Population size', y='Mobile device count') +
   scale_x_log10() +
   scale_y_log10() +
   geom_abline(intercept = 0, slope = 0.013, size=0.3, color='gray45') +
@@ -52,12 +52,12 @@ my_breaks <- c(0.05, 0.1, 1, 2, 5, 10, 20, 30)
 g2 <- ggplot(zones.pop[zones.pop$pop_share < 100,]) +
   geom_sf(aes(fill=pop_share), color = NA, alpha=1, show.legend = T) +
   scale_fill_gradient(low = "darkblue", high = "yellow", trans = "log",
-                      name='Population (%)',
+                      name="Device count\n/population (%)",
                       breaks = my_breaks, labels = my_breaks) +
   coord_sf(datum=st_crs(3006)) +
   theme(legend.position = 'bottom') +
 #  geom_sf(data = county, color = 'white', alpha=1, fill=NA, size=0.3) +
-  annotation_scale() +
+  annotation_scale(location='tl') +
   theme_void() +
   theme(plot.margin = margin(1,1,0,0, "cm"))
 
@@ -105,9 +105,11 @@ g5 <- ggmap(ss_basemap) +
   theme_void() +
   theme(plot.margin = margin(1,1,0,0, "cm"))
 
-G1 <- ggarrange(g1, g2, ncol = 2, nrow = 1, widths = c(0.7, 0.3), labels = c('(a)', '(b)'))
+G1 <- ggarrange(g1, g2, ncol = 2, nrow = 1, widths = c(0.6, 0.4), labels = c('(a)', '(b)'))
+ggsave(filename = "figures/homes_desc.png", plot=G1,
+       width = 7, height = 4, unit = "in", dpi = 300)
+
 G2 <- ggarrange(g3, g5, g4, ncol = 3, nrow = 1, labels = c('(c)', '(d)', '(e)'))
 G <- ggarrange(G1, G2, ncol = 1, nrow = 2)
 ggsave(filename = "figures/homes_desc_sub.png", plot=G,
        width = 12, height = 8, unit = "in", dpi = 300)
-# st_write(zones.pop, 'results/zones_homes_2019.shp')

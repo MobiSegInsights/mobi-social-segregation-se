@@ -1,0 +1,1239 @@
+class,subclass,count,category,Keep
+amenity,bench,19100,Outdoor Recreation,1
+amenity,shelter,13586,Outdoor Recreation,1
+amenity,parking,12141,Transportation,0
+amenity,restaurant,9399,Food and Drink,1
+amenity,waste_basket,9247,Home and Living,0
+tourism,information,8739,Tourism,1
+amenity,bicycle_parking,6380,Transportation,0
+leisure,picnic_table,5408,Outdoor Recreation,1
+leisure,playground,4932,Outdoor Recreation,1
+amenity,post_box,4862,Home and Living,0
+amenity,toilets,4803,Healthcare,0
+amenity,place_of_worship,4530,Religious Places,1
+amenity,cafe,3833,Food and Drink,1
+amenity,fast_food,3815,Food and Drink,1
+amenity,recycling,3538,Home and Living,0
+amenity,fuel,3189,Automotive Services,0
+amenity,charging_station,3117,Transportation,0
+shop,supermarket,2998,Groceries and Food,1
+shop,hairdresser,2649,Health and Beauty,1
+tourism,picnic_site,2465,Outdoor Recreation,1
+leisure,firepit,2356,Outdoor Recreation,1
+tourism,artwork,2338,Artisan Workshops,1
+shop,clothes,2152,Fashion and Accessories,1
+tourism,viewpoint,1997,Tourism,1
+amenity,vending_machine,1873,Groceries and Food,1
+leisure,sports_centre,1868,Sports and Activities,1
+shop,convenience,1734,Groceries and Food,1
+amenity,school,1580,Education,1
+amenity,bbq,1579,Food and Drink,1
+tourism,hotel,1473,Tourism,1
+historic,archaeological_site,1422,Historic,1
+amenity,kindergarten,1350,Education,1
+office,company,1326,Office,1
+amenity,parking_entrance,1322,Transportation,0
+tourism,chalet,1289,Leisure,1
+tourism,museum,1092,Leisure,1
+amenity,atm,1073,Financial Services,0
+tourism,attraction,1016,Entertainment,1
+amenity,community_centre,998,Recreation,1
+shop,kiosk,988,Groceries and Food,1
+leisure,swimming_area,971,Outdoor Recreation,1
+amenity,pharmacy,936,Healthcare,1
+shop,car_repair,914,Automotive Services,1
+amenity,clinic,892,Healthcare,1
+leisure,marina,867,Recreation,1
+historic,boundary_stone,817,Historic,1
+amenity,hunting_stand,780,Outdoor Recreation,1
+leisure,fitness_centre,771,Sports and Activities,1
+shop,car,754,Automotive Services,1
+amenity,bank,749,Financial Services,1
+amenity,ferry_terminal,747,Transportation,0
+tourism,hostel,746,Tourism,1
+amenity,social_facility,740,Healthcare,1
+historic,memorial,724,Historic,1
+amenity,library,716,Education,1
+amenity,drinking_water,685,Healthcare,0
+leisure,slipway,681,Transportation,0
+shop,doityourself,637,Craft,1
+shop,florist,610,Craft,1
+tourism,camp_site,596,Outdoor Recreation,1
+amenity,pub,588,Food and Drink,1
+amenity,waste_disposal,585,Home and Living,0
+historic,yes,585,Historic,1
+amenity,fountain,564,Outdoor Recreation,1
+historic,ruins,557,Historic,1
+amenity,dentist,541,Healthcare,1
+shop,beauty,536,Health and Beauty,1
+amenity,car_wash,535,Automotive Services,1
+tourism,camp_pitch,533,Outdoor Recreation,1
+shop,bakery,532,Food and Drink,1
+shop,bicycle,471,Sports and Activities,1
+amenity,fire_station,469,Emergency Services,0
+emergency,life_ring,468,Emergency Services,0
+amenity,sanitary_dump_station,432,Home and Living,0
+office,estate_agent,426,Financial Services,1
+shop,optician,426,Healthcare,1
+leisure,pitch,423,Sports and Activities,1
+shop,furniture,422,Home and Living,1
+amenity,compressed_air,418,Automotive Services,0
+leisure,fitness_station,412,Sports and Activities,1
+shop,electronics,407,Home and Living,1
+tourism,guest_house,406,Tourism,1
+tourism,wilderness_hut,396,Outdoor Recreation,1
+shop,alcohol,391,Food and Drink,1
+shop,sports,387,Sports and Activities,1
+shop,second_hand,370,Home and Living,1
+shop,shoes,364,Fashion and Accessories,1
+amenity,public_bath,357,Health and Beauty,1
+amenity,bar,351,Food and Drink,1
+shop,yes,344,Shop,1
+amenity,theatre,330,Entertainment,1
+shop,jewelry,327,Fashion and Accessories,1
+shop,interior_decoration,326,Home and Living,1
+amenity,post_office,324,Office,1
+historic,rune_stone,319,Historic,1
+amenity,bicycle_rental,309,Transportation,0
+shop,mall,302,Food and Drink,1
+shop,hardware,297,Home and Living,1
+leisure,bird_hide,291,Outdoor Recreation,1
+leisure,bathing_place,290,Outdoor Recreation,1
+emergency,fire_hydrant,281,Emergency Services,0
+shop,books,280,Education,1
+amenity,shower,279,Health and Beauty,1
+emergency,defibrillator,276,Healthcare,0
+amenity,cinema,265,Entertainment,1
+office,association,257,Office,1
+amenity,grit_bin,256,Transportation,0
+shop,vacant,251,Shop,1
+shop,confectionery,246,Food and Drink,1
+shop,gift,242,Craft,1
+amenity,townhall,232,Office,1
+office,government,232,Office,1
+amenity,parking_space,229,Transportation,0
+shop,pet,228,Healthcare,1
+historic,castle,226,Historic,1
+shop,garden_centre,222,Home and Living,1
+amenity,police,220,Emergency Services,0
+shop,charity,217,Financial Services,1
+shop,paint,212,Artisan Workshops,1
+amenity,ice_cream,209,Food and Drink,1
+shop,massage,209,Health and Beauty,1
+shop,dry_cleaning,207,Home and Living,1
+amenity,public_building,206,Office,1
+amenity,loading_dock,203,Transportation,0
+office,yes,203,Office,1
+shop,variety_store,200,Groceries and Food,1
+tourism,caravan_site,200,Outdoor Recreation,1
+leisure,sauna,198,Health and Beauty,1
+amenity,taxi,196,Transportation,0
+amenity,vehicle_inspection,193,Automotive Services,1
+amenity,driving_school,189,Education,1
+shop,tyres,178,Automotive Services,1
+amenity,bus_station,174,Transportation,0
+amenity,doctors,174,Healthcare,1
+shop,farm,174,Outdoor Recreation,1
+amenity,veterinary,173,Healthcare,1
+historic,building,170,Office,1
+historic,monument,170,Historic,1
+sport,swimming,170,Sports and Activities,1
+historic,milestone,168,Historic,1
+shop,antiques,168,Craft,1
+shop,toys,165,Craft,1
+shop,mobile_phone,164,Shop,1
+amenity,car_rental,163,Transportation,1
+historic,mine,150,Recreation,1
+leisure,sports_hall,149,Indoor Sports,1
+shop,seafood,144,Food and Drink,1
+amenity,motorcycle_parking,142,Transportation,0
+shop,funeral_directors,142,Healthcare,1
+historic,manor,139,Historic,1
+shop,art,139,Artisan Workshops,1
+shop,craft,138,Artisan Workshops,1
+office,diplomatic,136,Office,1
+amenity,parcel_locker,132,Transportation,0
+shop,department_store,132,Fashion and Accessories,1
+amenity,boathouse,131,Recreation,0
+shop,car_parts,131,Automotive Services,0
+shop,deli,128,Food and Drink,1
+shop,bed,125,Home and Living,1
+shop,cosmetics,125,Health and Beauty,1
+leisure,water_park,116,Recreation,1
+amenity,social_centre,114,Recreation,1
+shop,houseware,114,Home and Living,1
+tourism,gallery,114,Artisan Workshops,1
+amenity,clock,106,Historic,1
+shop,computer,106,Shop,1
+amenity,bicycle_repair_station,105,Automotive Services,1
+shop,tattoo,104,Health and Beauty,1
+leisure,dance,102,Entertainment,1
+shop,outdoor,101,Outdoor Recreation,1
+amenity,letter_box,100,Transportation,0
+amenity,water_point,100,Outdoor Recreation,1
+leisure,swimming_pool,100,Recreation,1
+historic,stone,99,Artisan Workshops,1
+shop,kitchen,98,Home and Living,1
+shop,agrarian,97,Outdoor Recreation,1
+amenity,childcare,96,Education,1
+amenity,university,94,Education,1
+office,it,94,Office,1
+shop,fabric,94,Fashion and Accessories,1
+amenity,nightclub,91,Entertainment,1
+amenity,boat_rental,89,Recreation,0
+amenity,boat_storage,86,Recreation,0
+sport,climbing,86,Sports and Activities,1
+leisure,miniature_golf,84,Sports and Activities,1
+office,logistics,84,Transportation,1
+tourism,alpine_hut,83,Outdoor Recreation,1
+leisure,park,81,Outdoor Recreation,1
+shop,travel_agency,81,Tourism,1
+leisure,fishing,80,Outdoor Recreation,1
+shop,watches,80,Fashion and Accessories,1
+amenity,arts_centre,79,Entertainment,1
+shop,greengrocer,79,Groceries and Food,1
+amenity,college,78,Education,1
+shop,ticket,77,Entertainment,1
+amenity,bureau_de_change,76,Financial Services,1
+leisure,ice_rink,76,Sports and Activities,1
+office,educational_institution,76,Education,1
+shop,appliance,76,Home and Living,1
+shop,trade,76,Shop,1
+tourism,yes,76,Tourism,1
+amenity,dressing_room,75,Fashion and Accessories,1
+historic,tomb,75,Historic,1
+shop,laundry,75,Home and Living,1
+shop,butcher,74,Groceries and Food,1
+amenity,nursing_home,73,Healthcare,1
+shop,motorcycle,72,Automotive Services,1
+leisure,horse_riding,71,Sports and Activities,1
+leisure,stadium,70,Sports and Activities,1
+shop,hifi,65,Home and Living,1
+leisure,disc_golf_course,63,Outdoor Recreation,1
+shop,music,63,Entertainment,1
+shop,stationery,63,Office,1
+shop,photo,62,Artisan Workshops,1
+amenity,courthouse,61,Office,1
+emergency,phone,61,Office,0
+craft,metal_construction,60,Artisan Workshops,1
+craft,carpenter,59,Artisan Workshops,1
+emergency,fire_extinguisher,59,Emergency Services,0
+amenity,hospital,58,Healthcare,1
+craft,electrician,58,Artisan Workshops,1
+historic,cannon,58,Historic,1
+office,employment_agency,57,Office,1
+shop,tailor,56,Artisan Workshops,1
+craft,brewery,55,Food and Drink,1
+craft,glaziery,55,Artisan Workshops,1
+amenity,events_venue,54,Entertainment,1
+shop,tobacco,54,Groceries and Food,1
+tourism,apartment,53,Tourism,1
+shop,musical_instrument,52,Artisan Workshops,1
+shop,pastry,52,Food and Drink,1
+historic,wreck,51,Historic,1
+leisure,beach_resort,51,Tourism,1
+leisure,outdoor_seating,51,Food and Drink,1
+office,lawyer,51,Office,1
+amenity,trolley_bay,50,Transportation,0
+craft,shoemaker,50,Artisan Workshops,1
+leisure,dog_park,49,Outdoor Recreation,1
+office,insurance,49,Financial Services,1
+office,political_party,48,Office,1
+office,religion,48,Religious Places,1
+shop,boat,48,Transportation,0
+shop,health_food,48,Groceries and Food,1
+shop,locksmith,47,Home and Living,1
+shop,video,47,Entertainment,1
+tourism,motel,46,Tourism,1
+historic,fort,45,Historic,1
+leisure,tanning_salon,45,Health and Beauty,1
+craft,sawmill,44,Artisan Workshops,1
+shop,tea,44,Food and Drink,1
+sport,disc_golf,44,Sports and Activities,1
+office,newspaper,43,Office,1
+shop,lighting,43,Home and Living,1
+shop,sewing,43,Artisan Workshops,1
+shop,frame,42,Artisan Workshops,1
+sport,equestrian,42,Sports and Activities,1
+shop,bag,40,Fashion and Accessories,1
+shop,copyshop,40,Office,1
+tourism,zoo,40,Recreation,1
+craft,electronics_repair,39,Artisan Workshops,1
+leisure,bowling_alley,39,Sports and Activities,1
+leisure,track,39,Sports and Activities,1
+office,ngo,38,Office,1
+shop,storage_rental,38,Office,0
+shop,wholesale,38,Groceries and Food,1
+leisure,beach,37,Outdoor Recreation,1
+office,accountant,37,Financial Services,1
+shop,estate_agent,37,Financial Services,1
+leisure,bandstand,36,Entertainment,1
+shop,nutrition_supplements,36,Health and Beauty,1
+tourism,theme_park,36,Entertainment,1
+amenity,car_sharing,35,Transportation,0
+amenity,lounger,35,Leisure,1
+shop,chemist,35,Healthcare,1
+shop,baby_goods,34,Home and Living,1
+craft,photographer,33,Artisan Workshops,1
+emergency,emergency_ward_entrance,33,Emergency Services,0
+office,architect,33,Office,1
+shop,carpet,33,Home and Living,1
+shop,chocolate,33,Food and Drink,1
+amenity,laundry,32,Home and Living,1
+amenity,tent_ground,32,Outdoor Recreation,1
+historic,mine_shaft,32,Historic,1
+office,consulting,32,Office,1
+shop,coffee,32,Food and Drink,1
+shop,pawnbroker,32,Financial Services,1
+amenity,conference_centre,31,Office,1
+leisure,garden,31,Outdoor Recreation,1
+shop,shoe_repair,31,Artisan Workshops,1
+emergency,ambulance_station,30,Emergency Services,0
+shop,fishing,30,Outdoor Recreation,1
+amenity,kitchen,29,Home and Living,1
+amenity,chair,28,Outdoor Recreation,1
+amenity,weighbridge,28,Transportation,0
+tourism,lean_to,28,Outdoor Recreation,1
+craft,plumber,27,Artisan Workshops,1
+office,advertising_agency,27,Office,1
+shop,general,27,Shop,1
+shop,hunting,27,Outdoor Recreation,1
+sport,canoe,27,Outdoor Recreation,1
+amenity,lifeboat_station,26,Emergency Services,0
+amenity,studio,26,Artisan Workshops,1
+craft,handicraft,26,Craft,1
+craft,hvac,26,Home and Living,1
+craft,painter,26,Artisan Workshops,1
+historic,military,26,Recreation,1
+leisure,golf_course,26,Sports and Activities,1
+office,research,26,Education,1
+amenity,marketplace,25,Groceries and Food,1
+shop,erotic,25,Entertainment,1
+sport,multi,25,Sports and Activities,1
+amenity,animal_boarding,24,Recreation,1
+craft,pottery,24,Artisan Workshops,1
+shop,newsagent,24,Groceries and Food,1
+sport,soccer,24,Sports and Activities,1
+amenity,music_school,23,Education,1
+craft,locksmith,23,Home and Living,1
+leisure,outdoor_bathing,23,Outdoor Recreation,1
+tourism,cabin,23,Outdoor Recreation,1
+craft,blacksmith,22,Artisan Workshops,1
+historic,house,22,Historic,1
+shop,chandler,22,Artisan Workshops,1
+historic,charcoal_pile,21,Outdoor Recreation,1
+office,telecommunication,21,Office,1
+office,travel_agent,21,Tourism,1
+amenity,food_court,20,Food and Drink,1
+shop,bathroom_furnishing,20,Home and Living,1
+sport,shooting,20,Sports and Activities,1
+sport,tennis,20,Sports and Activities,1
+office,property_management,19,Office,1
+shop,rental,19,Home and Living,1
+shop,swimming_pool,19,Recreation,1
+shop,cheese,18,Food and Drink,1
+shop,electrical,18,Home and Living,1
+shop,glaziery,18,Artisan Workshops,1
+sport,orienteering,18,Outdoor Recreation,1
+amenity,dojo,17,Sports and Activities,1
+amenity,harbourmaster,17,Transportation,0
+sport,skiing,17,Sports and Activities,1
+amenity,grave_yard,16,Religious Places,1
+amenity,table,16,Outdoor Recreation,1
+amenity,ticket_validator,16,Transportation,0
+craft,cleaning,16,Home and Living,1
+leisure,escape_game,16,Entertainment,1
+shop,fireplace,16,Home and Living,1
+sport,golf,16,Sports and Activities,1
+craft,sculptor,15,Artisan Workshops,1
+emergency,yes,15,Emergency Services,0
+historic,industrial,15,Historic,1
+historic,wayside_cross,15,Religious Places,1
+office,financial,15,Financial Services,1
+shop,beverages,15,Food and Drink,1
+shop,boutique,15,Fashion and Accessories,1
+shop,repair,15,Automotive Services,1
+amenity,prison,14,Emergency Services,0
+amenity,public_bookcase,14,Education,0
+amenity,reception_desk,14,Office,1
+amenity,waste_transfer_station,14,Transportation,0
+historic,Boplatsgrop,14,Historic,1
+shop,auction_house,14,Financial Services,1
+shop,curtain,14,Home and Living,1
+shop,fashion_accessories,14,Fashion and Accessories,1
+shop,ice_cream,14,Food and Drink,1
+shop,party,14,Entertainment,1
+shop,tiles,14,Home and Living,1
+shop,window_blind,14,Home and Living,1
+amenity,animal_breeding,13,Recreation,1
+amenity,crematorium,13,Religious Places,1
+amenity,retirement_home,13,Healthcare,1
+amenity,ski_rental,13,Sports and Activities,1
+craft,confectionery,13,Food and Drink,1
+shop,pet_grooming,13,Health and Beauty,1
+sport,boules,13,Sports and Activities,1
+amenity,coworking_space,12,Office,1
+amenity,gambling,12,Entertainment,1
+amenity,smoking_area,12,Leisure,1
+craft,key_cutter,12,Artisan Workshops,1
+craft,upholsterer,12,Artisan Workshops,1
+office,construction_company,12,Office,1
+office,coworking,12,Office,1
+shop,lottery,12,Financial Services,1
+shop,pottery,12,Artisan Workshops,1
+sport,10pin,12,Sports and Activities,1
+amenity,spa,11,Health and Beauty,1
+craft,boatbuilder,11,Artisan Workshops,1
+craft,stonemason,11,Artisan Workshops,1
+leisure,swimming,11,Sports and Activities,1
+leisure,trampoline_park,11,Sports and Activities,1
+office,moving_company,11,Home and Living,1
+shop,caravan,11,Outdoor Recreation,1
+shop,games,11,Entertainment,1
+amenity,bicycle_wash,10,Automotive Services,1
+amenity,office,10,Office,1
+amenity,post_depot,10,Transportation,0
+craft,beekeeper,10,Artisan Workshops,1
+craft,builder,10,Artisan Workshops,1
+craft,caterer,10,Food and Drink,1
+craft,roofer,10,Artisan Workshops,1
+craft,signmaker,10,Artisan Workshops,1
+craft,tailor,10,Artisan Workshops,1
+craft,window_construction,10,Artisan Workshops,1
+historic,bunker,10,Historic,1
+historic,shieling,10,Outdoor Recreation,1
+leisure,amusement_arcade,10,Entertainment,1
+leisure,nature_reserve,10,Outdoor Recreation,1
+office,security,10,Emergency Services,1
+shop,bookmaker,10,Shop,1
+shop,collector,10,Shop,1
+shop,scuba_diving,10,Sports and Activities,1
+sport,motor,10,Automotive Services,1
+amenity,animal_training,9,Sports and Activities,1
+amenity,bulletin_board,9,Office,0
+amenity,concert_hall,9,Entertainment,1
+amenity,dive_centre,9,Sports and Activities,1
+amenity,monastery,9,Religious Places,1
+amenity,other,9,Unknown,0
+historic,quarry,9,Outdoor Recreation,1
+leisure,common,9,Leisure,1
+shop,hairdresser_supply,9,Health and Beauty,1
+shop,leather,9,Artisan Workshops,1
+shop,motorcycle_repair,9,Automotive Services,1
+shop,video_games,9,Entertainment,1
+sport,ice_hockey,9,Sports and Activities,1
+amenity,carpet_rack,8,Home and Living,1
+amenity,customs,8,Transportation,0
+amenity,dogwaste_basket,8,Home and Living,0
+amenity,photo_booth,8,Entertainment,1
+craft,jeweller,8,Fashion and Accessories,1
+leisure,indoor_play,8,Entertainment,1
+leisure,yes,8,Leisure,1
+office,charity,8,Financial Services,1
+office,harbour_master,8,Transportation,0
+shop,equestrian,8,Sports and Activities,1
+shop,flooring,8,Home and Living,1
+shop,perfumery,8,Health and Beauty,1
+shop,radiotechnics,8,Craft,1
+shop,tool_hire,8,Automotive Services,1
+tourism,picnic_table,8,Outdoor Recreation,1
+amenity,feeding_place,7,Food and Drink,1
+amenity,lifeboat,7,Emergency Services,0
+amenity,watering_place,7,Outdoor Recreation,1
+amenity,waxing_station,7,Automotive Services,1
+emergency,assembly_point,7,Emergency Services,0
+emergency,lifeguard,7,Emergency Services,0
+historic,city_gate,7,Historic,1
+leisure,hackerspace,7,Education,1
+office,energy_supplier,7,Office,1
+shop,candles,7,Craft,1
+shop,gas,7,Automotive Services,1
+shop,medical_supply,7,Healthcare,1
+shop,security,7,Emergency Services,1
+shop,snowmobile,7,Outdoor Recreation,1
+sport,scuba_diving,7,Sports and Activities,1
+sport,ski_jumping,7,Sports and Activities,1
+amenity,animal_shelter,6,Healthcare,1
+amenity,game_feeding,6,Outdoor Recreation,1
+amenity,ranger_station,6,Outdoor Recreation,1
+amenity,telephone,6,Office,0
+amenity,training,6,Sports and Activities,1
+craft,clockmaker,6,Artisan Workshops,1
+craft,distillery,6,Food and Drink,1
+emergency,siren,6,Emergency Services,0
+historic,battlefield,6,Historic,1
+historic,ship,6,Transportation,1
+historic,tower,6,Historic,1
+leisure,fireplace,6,Outdoor Recreation,1
+office,forestry,6,Office,1
+office,guide,6,Tourism,1
+office,vacant,6,Office,1
+shop,canoe_hire,6,Outdoor Recreation,1
+shop,food,6,Food and Drink,1
+shop,hearing_aids,6,Healthcare,1
+shop,plant_hire,6,Automotive Services,1
+shop,wine,6,Food and Drink,1
+sport,climbing_adventure,6,Outdoor Recreation,1
+sport,curling,6,Sports and Activities,1
+sport,padel,6,Sports and Activities,1
+sport,rowing,6,Sports and Activities,1
+amenity,bicycle_trailer_sharing,5,Transportation,0
+amenity,device_charging_station,5,Transportation,0
+amenity,exhibition_centre,5,Entertainment,1
+amenity,locker,5,Sports and Activities,0
+amenity,mobile_library,5,Education,1
+amenity,research_institute,5,Education,1
+amenity,seat,5,Outdoor Recreation,1
+amenity,stage,5,Entertainment,1
+amenity,stripclub,5,Entertainment,1
+amenity,yes,5,Unknown,0
+craft,gardener,5,Artisan Workshops,1
+craft,tinsmith,5,Artisan Workshops,1
+emergency,no,5,Emergency Services,0
+historic,Tjärdal,5,Historic,1
+historic,farm,5,Outdoor Recreation,1
+historic,fångstgrop,5,Historic,1
+historic,railway_station,5,Transportation,0
+historic,school,5,Education,1
+leisure,resort,5,Leisure,1
+leisure,spa,5,Health and Beauty,1
+office,apartments,5,Home and Living,1
+office,camping,5,Outdoor Recreation,1
+office,foundation,5,Education,1
+office,union,5,Office,1
+shop,brewing_supplies,5,Craft,1
+shop,country_store,5,Groceries and Food,1
+shop,grocery,5,Groceries and Food,1
+shop,herbalist,5,Health and Beauty,1
+shop,household,5,Home and Living,1
+shop,model,5,Fashion and Accessories,1
+shop,ship_chandler,5,Craft,1
+shop,spices,5,Groceries and Food,1
+shop,water_sports,5,Sports and Activities,1
+sport,athletics,5,Sports and Activities,1
+sport,billiards,5,Sports and Activities,1
+sport,free_flying,5,Outdoor Recreation,1
+sport,sailing,5,Outdoor Recreation,1
+sport,skateboard,5,Sports and Activities,1
+sport,table_tennis,5,Sports and Activities,1
+sport,yes,5,Sports and Activities,1
+tourism,aquarium,5,Entertainment,1
+amenity,archive,4,Education,1
+amenity,car_pooling,4,Transportation,0
+amenity,casino,4,Entertainment,1
+amenity,closed,4,Unknown,0
+amenity,clubhouse,4,Recreation,1
+amenity,fixme,4,Unknown,0
+amenity,internet_cafe,4,Food and Drink,1
+amenity,mortuary,4,Healthcare,1
+amenity,music_venue,4,Entertainment,1
+amenity,reuse,4,Home and Living,1
+amenity,ski_school,4,Sports and Activities,1
+amenity,stables,4,Outdoor Recreation,1
+amenity,vacuum_cleaner,4,Home and Living,1
+craft,agricultural_engines,4,Automotive Services,1
+craft,goldsmith,4,Artisan Workshops,1
+craft,joiner,4,Artisan Workshops,1
+craft,watchmaker,4,Artisan Workshops,1
+emergency,fire_hose,4,Emergency Services,0
+historic,Fångstgrop,4,Historic,1
+historic,aircraft,4,Historic,1
+historic,church,4,Religious Places,1
+historic,palace,4,Historic,1
+leisure,bleachers,4,Sports and Activities,1
+leisure,wildlife_hide,4,Outdoor Recreation,1
+office,auctioneer,4,Financial Services,1
+office,parish,4,Religious Places,1
+office,publisher,4,Office,1
+office,therapist,4,Healthcare,1
+office,web_design,4,Office,1
+shop,accessories,4,Fashion and Accessories,1
+shop,atv,4,Outdoor Recreation,1
+shop,camera,4,Home and Living,1
+shop,dairy,4,Groceries and Food,1
+shop,frozen_food,4,Groceries and Food,1
+shop,fuel,4,Automotive Services,1
+shop,hobby,4,Recreation,1
+shop,office_supplies,4,Office,1
+shop,outpost,4,Office,1
+shop,piercing,4,Health and Beauty,1
+shop,ski,4,Outdoor Recreation,1
+shop,storage,4,Office,1
+shop,vacuum_cleaner,4,Home and Living,1
+shop,wool,4,Craft,1
+sport,bandy,4,Sports and Activities,1
+sport,basketball,4,Sports and Activities,1
+sport,martial_arts,4,Sports and Activities,1
+sport,motocross,4,Sports and Activities,1
+sport,survey,4,Office,1
+amenity,bell,3,Religious Places,1
+amenity,bicycle_pump,3,Transportation,0
+amenity,biergarten,3,Food and Drink,1
+amenity,bts,3,Transportation,0
+amenity,elevator,3,Transportation,0
+amenity,fireplace,3,Outdoor Recreation,1
+amenity,first_aid,3,Healthcare,0
+amenity,language_school,3,Education,1
+amenity,luggage_locker,3,Transportation,0
+amenity,planetarium,3,Education,1
+amenity,riding_school,3,Education,1
+amenity,scout_hut,3,Education,1
+amenity,unofficial_parking,3,Transportation,0
+craft,bakery,3,Food and Drink,1
+craft,basket_maker,3,Artisan Workshops,1
+craft,dressmaker,3,Artisan Workshops,1
+craft,optician,3,Healthcare,1
+craft,print_shop,3,Office,1
+craft,printer,3,Office,1
+craft,sun_protection,3,Health and Beauty,1
+craft,welder,3,Artisan Workshops,1
+craft,winery,3,Food and Drink,1
+emergency,rescue_board,3,Emergency Services,0
+historic,Kolbotten,3,Historic,1
+historic,Trap_pit,3,Historic,1
+historic,fortification,3,Historic,1
+historic,grave_yard,3,Religious Places,1
+historic,marker,3,Tourism,1
+historic,monastery,3,Religious Places,1
+historic,no,3,Historic,1
+historic,watermill,3,Historic,1
+leisure,disc_golf,3,Sports and Activities,1
+leisure,foot_bath,3,Health and Beauty,1
+leisure,hammock,3,Outdoor Recreation,1
+leisure,high_ropes_course,3,Outdoor Recreation,1
+leisure,indoor_playground,3,Entertainment,1
+leisure,public_bath,3,Health and Beauty,1
+leisure,scene,3,Entertainment,1
+leisure,summer_camp,3,Recreation,1
+leisure,whirlpool,3,Recreation,1
+office,administrative,3,Office,1
+office,engineer,3,Office,1
+office,engineering,3,Office,1
+office,marketing,3,Office,1
+office,physician,3,Office,1
+office,tax,3,Financial Services,1
+office,university,3,Education,1
+shop,arts_and_crafts,3,Craft,1
+shop,boat_rental,3,Recreation,1
+shop,e-cigarette,3,Health and Beauty,1
+shop,golf,3,Sports and Activities,1
+shop,groundskeeping,3,Outdoor Recreation,1
+shop,household_linen,3,Home and Living,1
+shop,knives,3,Craft,1
+shop,military_surplus,3,Fashion and Accessories,1
+shop,psychic,3,Entertainment,1
+shop,scooter,3,Transportation,1
+shop,textiles,3,Fashion and Accessories,1
+shop,truck,3,Transportation,1
+shop,wood,3,Craft,1
+sport,boxing,3,Sports and Activities,1
+sport,chess,3,Sports and Activities,1
+sport,gymnastics,3,Sports and Activities,1
+sport,judo,3,Sports and Activities,1
+sport,karting,3,Sports and Activities,1
+sport,model_aerodrome,3,Recreation,1
+sport,water_ski,3,Sports and Activities,1
+sport,yoga,3,Health and Beauty,1
+tourism,waterfall,3,Outdoor Recreation,1
+amenity,cafe / restaurant,2,Food and Drink,1
+amenity,cash_deposit,2,Financial Services,1
+amenity,dancing_school,2,Education,1
+amenity,dog_day_care,2,Healthcare,1
+amenity,events_centre,2,Entertainment,1
+amenity,festival_grounds,2,Entertainment,1
+amenity,gantry,2,Transportation,1
+amenity,give_box,2,Financial Services,0
+amenity,lavoir,2,Historic,1
+amenity,meeting,2,Office,0
+amenity,meeting_point,2,Recreation,0
+amenity,pumping_station,2,Transportation,0
+amenity,rental,2,Transportation,0
+amenity,rescue_station,2,Emergency Services,0
+amenity,rubbish_bin,2,Outdoor Recreation,0
+amenity,salt,2,Groceries and Food,1
+amenity,scooter_parking,2,Transportation,0
+amenity,toy_library,2,Education,1
+amenity,vacant,2,Office,1
+amenity,vehicle_ramp,2,Transportation,0
+craft,bookbinder,2,Artisan Workshops,1
+craft,carpet_layer,2,Artisan Workshops,1
+craft,chimney_sweeper,2,Artisan Workshops,1
+craft,floorer,2,Artisan Workshops,1
+craft,glassblower,2,Artisan Workshops,1
+craft,metal_works,2,Artisan Workshops,1
+craft,parquet_layer,2,Artisan Workshops,1
+craft,photographic_laboratory,2,Artisan Workshops,1
+craft,saddler,2,Artisan Workshops,1
+craft,scaffolder,2,Artisan Workshops,1
+craft,tiler,2,Artisan Workshops,1
+craft,yes,2,Craft,1
+emergency,lifeboat,2,Emergency Services,0
+emergency,water_rescue,2,Emergency Services,0
+emergency,water_tank,2,Emergency Services,0
+historic,R,2,Historic,1
+historic,cairn,2,Historic,1
+historic,gallows,2,Historic,1
+historic,heritage,2,Historic,1
+historic,locomotive,2,Historic,1
+historic,remains,2,Historic,1
+historic,settlement,2,Historic,1
+historic,wayside_chapel,2,Religious Places,1
+leisure,firepot,2,Outdoor Recreation,1
+leisure,fountain,2,Outdoor Recreation,1
+leisure,hammock_swing,2,Outdoor Recreation,1
+leisure,hunting_stand,2,Outdoor Recreation,1
+leisure,lake_bath,2,Outdoor Recreation,1
+leisure,naturhamn,2,Recreation,1
+leisure,park_bench,2,Outdoor Recreation,1
+leisure,picnic_site,2,Outdoor Recreation,1
+leisure,recreation_ground,2,Recreation,1
+leisure,riding,2,Sports and Activities,1
+leisure,swimming_area.,2,Outdoor Recreation,1
+office,bank,2,Financial Services,1
+office,courier,2,Transportation,1
+office,financial_advisor,2,Financial Services,1
+office,labor_union,2,Office,1
+office,labour_union,2,Office,1
+office,transport,2,Office,1
+office,transportation,2,Transportation,1
+shop,applience,2,Home and Living,1
+shop,auctioneers,2,Financial Services,1
+shop,coffee_roasting,2,Food and Drink,1
+shop,factory_outlet,2,Fashion and Accessories,1
+shop,flea_market,2,Groceries and Food,1
+shop,glass,2,Craft,1
+shop,gym,2,Sports and Activities,1
+shop,honey,2,Groceries and Food,1
+shop,hvac,2,Home and Living,1
+shop,insurance,2,Financial Services,1
+shop,interior_design,2,Home and Living,1
+shop,money_transfer,2,Financial Services,1
+shop,office,2,Office,1
+shop,printing,2,Office,1
+shop,religion,2,Shop,1
+shop,shopping_centre,2,Groceries and Food,1
+shop,signs,2,Office,1
+shop,snus,2,Health and Beauty,1
+shop,tableware,2,Home and Living,1
+shop,tanning,2,Health and Beauty,1
+shop,telecommunication,2,Office,1
+shop,tools,2,Craft,1
+shop,truck_repair,2,Automotive Services,1
+shop,weapons,2,Craft,1
+shop,wigs,2,Fashion and Accessories,1
+sport,archery,2,Sports and Activities,1
+sport,bowls,2,Sports and Activities,1
+sport,canoeing,2,Outdoor Recreation,1
+sport,cross_country_skiing;orienteering,2,Sports and Activities,1
+sport,cycling,2,Sports and Activities,1
+sport,dance,2,Entertainment,1
+sport,fencing,2,Sports and Activities,1
+sport,fitness,2,Sports and Activities,1
+sport,handball,2,Sports and Activities,1
+sport,ice_skating,2,Sports and Activities,1
+sport,miniature_golf,2,Sports and Activities,1
+sport,paddle_tennis,2,Sports and Activities,1
+sport,running,2,Sports and Activities,1
+sport,shooting_range,2,Sports and Activities,1
+sport,ski,2,Outdoor Recreation,1
+sport,skydiving,2,Sports and Activities,1
+sport,surfing,2,Sports and Activities,1
+sport,wrestling,2,Sports and Activities,1
+tourism,camping,2,Outdoor Recreation,1
+amenity,Select,1,Unknown,0
+amenity,abandoned_fuel,1,Automotive Services,0
+amenity,ambulance,1,Emergency Services,0
+amenity,art_school,1,Education,1
+amenity,art_work,1,Artisan Workshops,1
+amenity,atm;toilets,1,Financial Services,1
+amenity,baby_hatch,1,Healthcare,1
+amenity,barbecue,1,Food and Drink,1
+amenity,bath,1,Health and Beauty,1
+amenity,bathroom,1,Healthcare,1
+amenity,bee_hive,1,Outdoor Recreation,1
+amenity,bench;bbq,1,Outdoor Recreation,1
+amenity,bench;waste_basket,1,Outdoor Recreation,1
+amenity,bicycle_washing,1,Automotive Services,1
+amenity,binoculars,1,Tourism,1
+amenity,bird_hide,1,Outdoor Recreation,1
+amenity,blood_donation,1,Healthcare,1
+amenity,boat_sharing,1,Transportation,0
+amenity,border_control,1,Transportation,0
+amenity,cafe;bicycle_rental,1,Food and Drink,1
+amenity,campus,1,Education,1
+amenity,canoe_rental,1,Outdoor Recreation,1
+amenity,carport,1,Automotive Services,0
+amenity,centre,1,Education,0
+amenity,changing_room,1,Sports and Activities,1
+amenity,charity,1,Financial Services,1
+amenity,chiropractor,1,Healthcare,1
+amenity,chiropractor;massage;psychologist;physiotherapy,1,Healthcare,1
+amenity,coastguard,1,Emergency Services,0
+amenity,communal_cooking_area,1,Food and Drink,1
+amenity,computer_club,1,Education,1
+amenity,confectionary,1,Food and Drink,1
+amenity,conference_centre;community_centre,1,Education,1
+amenity,confic,1,Unknown,0
+amenity,culture_center,1,Entertainment,1
+amenity,dagmamma,1,Education,1
+amenity,disused:restaurant,1,Food and Drink,1
+amenity,dog_care,1,Healthcare,1
+amenity,dog_parking,1,Recreation,0
+amenity,dog_shop,1,Groceries and Food,1
+amenity,dog_training,1,Sports and Activities,1
+amenity,drop_zone,1,Sports and Activities,1
+amenity,equipment_exchange,1,Sports and Activities,1
+amenity,escape_game,1,Entertainment,1
+amenity,fast_food;ice_cream,1,Food and Drink,1
+amenity,fire_station;ambulance_station,1,Emergency Services,0
+amenity,firewood,1,Craft,1
+amenity,flight_school,1,Education,1
+amenity,folkpark,1,Outdoor Recreation,1
+amenity,food,1,Food and Drink,1
+amenity,food_bank,1,Groceries and Food,1
+amenity,freeshop,1,Shop,1
+amenity,freight_terminal,1,Transportation,0
+amenity,funeral_hall,1,Religious Places,1
+amenity,gas_cylinder_testing,1,Automotive Services,0
+amenity,harbour charge,1,Transportation,0
+amenity,health_centre,1,Healthcare,1
+amenity,healthcare,1,Healthcare,1
+amenity,hemkunskapssal,1,Education,1
+amenity,hull_cleaning_machine,1,Transportation,0
+amenity,info,1,Office,1
+amenity,institute,1,Education,1
+amenity,job_centre,1,Office,1
+amenity,julgran försäljning,1,Groceries and Food,1
+amenity,karaoke_box,1,Entertainment,1
+amenity,kayak_rental,1,Sports and Activities,1
+amenity,kennels,1,Recreation,1
+amenity,kiss_stop,1,Transportation,0
+amenity,kompost,1,Outdoor Recreation,1
+amenity,library_dropoff,1,Education,0
+amenity,lost_property_offixe,1,Office,1
+amenity,lounge,1,Food and Drink,1
+amenity,machine_rental,1,Automotive Services,1
+amenity,marine service,1,Automotive Services,1
+amenity,mini_ramp,1,Sports and Activities,1
+amenity,minnesplats,1,Historic,1
+amenity,money_transfer,1,Financial Services,1
+amenity,motorcycle_rental,1,Transportation,1
+amenity,music_school;dancing_school,1,Education,1
+amenity,muster_point,1,Emergency Services,0
+amenity,natur pool,1,Outdoor Recreation,1
+amenity,optician,1,Healthcare,1
+amenity,optometrist,1,Healthcare,1
+amenity,parking+shopping,1,Shop,1
+amenity,payment_terminal,1,Financial Services,0
+amenity,phone,1,Office,0
+amenity,picnic_table,1,Outdoor Recreation,1
+amenity,place_of_meditation,1,Outdoor Recreation,1
+amenity,post_box;bench,1,Recreation,1
+amenity,power_supply,1,Transportation,0
+amenity,prize_podium,1,Sports and Activities,1
+amenity,public,1,Unknown,0
+amenity,pump,1,Transportation,0
+amenity,rest_area,1,Transportation,1
+amenity,sailing_school,1,Education,1
+amenity,scrapyard,1,Automotive Services,1
+amenity,self_storage,1,Office,0
+amenity,shelter;bench;bbq,1,Outdoor Recreation,1
+amenity,shower;washing_machine;toilets,1,Home and Living,1
+amenity,skateboard_rental,1,Sports and Activities,1
+amenity,social_center,1,Recreation,1
+amenity,soup_kitchen,1,Food and Drink,1
+amenity,sports_centre,1,Sports and Activities,1
+amenity,sports_centre',1,Sports and Activities,1
+amenity,spring,1,Outdoor Recreation,1
+amenity,stable,1,Outdoor Recreation,1
+amenity,stand,1,Food and Drink,1
+amenity,stock_exchange,1,Financial Services,1
+amenity,strawberry_fields,1,Outdoor Recreation,1
+amenity,stroller_parking,1,Recreation,0
+amenity,student_accommodation,1,Education,0
+amenity,swimming,1,Sports and Activities,1
+amenity,swingerclub,1,Entertainment,1
+amenity,tailor,1,Artisan Workshops,1
+amenity,thermometer,1,Healthcare,1
+amenity,train_parking,1,Transportation,0
+amenity,vending_machine;waste_basket,1,Recreation,1
+amenity,washing_machine,1,Home and Living,1
+amenity,waste_basket;bench,1,Outdoor Recreation,1
+amenity,water,1,Outdoor Recreation,1
+amenity,we,1,Unknown,0
+amenity,werft,1,Transportation,0
+amenity,wilderness_hut,1,Outdoor Recreation,1
+amenity,wlan,1,Office,1
+amenity,workshop,1,Artisan Workshops,1
+craft,Ceramic_Painting,1,Artisan Workshops,1
+craft,art,1,Artisan Workshops,1
+craft,atelier,1,Artisan Workshops,1
+craft,brewery;distillery,1,Food and Drink,1
+craft,båtkapell_och_dynor,1,Artisan Workshops,1
+craft,car_painter,1,Automotive Services,1
+craft,car_varnisher,1,Automotive Services,1
+craft,cheese,1,Food and Drink,1
+craft,cider,1,Food and Drink,1
+craft,dental_technician,1,Healthcare,1
+craft,door_construction,1,Artisan Workshops,1
+craft,elecronics_repair,1,Artisan Workshops,1
+craft,electrician;plumber,1,Artisan Workshops,1
+craft,electronics,1,Home and Living,1
+craft,embroiderer,1,Artisan Workshops,1
+craft,engraver,1,Artisan Workshops,1
+craft,farrier,1,Artisan Workshops,1
+craft,foundry,1,Artisan Workshops,1
+craft,fruit_preserves,1,Food and Drink,1
+craft,furniture,1,Home and Living,1
+craft,gardener;painter;builder,1,Artisan Workshops,1
+craft,grinding_mill,1,Artisan Workshops,1
+craft,hand_craft,1,Artisan Workshops,1
+craft,hatter,1,Artisan Workshops,1
+craft,heating_engineer,1,Artisan Workshops,1
+craft,house_construction,1,Artisan Workshops,1
+craft,hydraulic_tubes,1,Automotive Services,1
+craft,hydraulics,1,Automotive Services,1
+craft,juice_bottler,1,Food and Drink,1
+craft,knife_sharpener,1,Artisan Workshops,1
+craft,knifes,1,Craft,1
+craft,laboratory,1,Healthcare,1
+craft,locksmith;shoemaker;tailor,1,Artisan Workshops,1
+craft,mechanic,1,Automotive Services,1
+craft,metal,1,Craft,1
+craft,metalworks,1,Artisan Workshops,1
+craft,musical_instrument,1,Artisan Workshops,1
+craft,photo_studio,1,Artisan Workshops,1
+craft,plasterer,1,Artisan Workshops,1
+craft,restoration,1,Artisan Workshops,1
+craft,sailmaker,1,Artisan Workshops,1
+craft,sewing,1,Artisan Workshops,1
+craft,sharpening,1,Artisan Workshops,1
+craft,stove_fitter,1,Artisan Workshops,1
+craft,varnisher,1,Artisan Workshops,1
+craft,weavery,1,Artisan Workshops,1
+emergency,control_centre,1,Office,0
+emergency,floater,1,Emergency Services,0
+emergency,lifeguard_base,1,Emergency Services,0
+emergency,muster_point,1,Emergency Services,0
+emergency,private,1,Emergency Services,0
+emergency,rally_point,1,Emergency Services,0
+historic,Antiquities(Stenrös),1,Historic,1
+historic,"Brott,_Täckt",1,Historic,1
+historic,Brytningsyta,1,Historic,1
+historic,Cholera_cemetery,1,Historic,1
+historic,Gruva,1,Historic,1
+historic,Kompassors,1,Historic,1
+historic,Kompassros,1,Historic,1
+historic,Olstorps_gamla_tomt,1,Historic,1
+historic,Ryssugn,1,Historic,1
+historic,Stensättning,1,Historic,1
+historic,Supartallen,1,Historic,1
+historic,Trapping_pit,1,Historic,1
+historic,beacon,1,Historic,1
+historic,bell,1,Historic,1
+historic,boat,1,Historic,1
+historic,bridge,1,Historic,1
+historic,churchyard,1,Historic,1
+historic,courthouse,1,Historic,1
+historic,crash_site,1,Historic,1
+historic,cross,1,Historic,1
+historic,drydock,1,Historic,1
+historic,farmland,1,Historic,1
+historic,fire_station,1,Historic,1
+historic,fornborg,1,Historic,1
+historic,foundry,1,Historic,1
+historic,gate,1,Historic,1
+historic,glacial_erratic,1,Historic,1
+historic,grave,1,Historic,1
+historic,graves,1,Historic,1
+historic,gravfält,1,Historic,1
+historic,gristmill,1,Historic,1
+historic,gun_emplacement,1,Historic,1
+historic,highwater_mark,1,Historic,1
+historic,luftvärnsställning_skansen,1,Historic,1
+historic,mansion,1,Historic,1
+historic,meteor_crater,1,Historic,1
+historic,mill place,1,Historic,1
+historic,monument_removed_for_renovation,1,Historic,1
+historic,railway_car,1,Historic,1
+historic,sconce;graves,1,Historic,1
+historic,statue,1,Historic,1
+historic,steam_engine,1,Historic,1
+historic,stone labyrinth,1,Historic,1
+historic,stone_row,1,Historic,1
+historic,stonesetting,1,Historic,1
+historic,store_house,1,Historic,1
+historic,substation,1,Historic,1
+historic,survey_point,1,Historic,1
+historic,tank,1,Historic,1
+historic,technical_monument,1,Historic,1
+historic,telephone,1,Historic,1
+historic,telephone_booth,1,Historic,1
+historic,tjärdal,1,Historic,1
+historic,transformer_tower,1,Historic,1
+historic,trapping_pit,1,Historic,1
+historic,tree,1,Historic,1
+historic,village,1,Historic,1
+historic,wayside_shrine,1,Historic,1
+historic,well,1,Historic,1
+historic,windmill,1,Historic,1
+historic,yrs,1,Historic,1
+historic,Östtorp,1,Historic,1
+leisure,Bingo,1,Entertainment,1
+leisure,abandoned_pitch,1,Entertainment,1
+leisure,adult_amusement_arcade,1,Entertainment,1
+leisure,adult_gaming_centre,1,Entertainment,1
+leisure,animal_training,1,Sports and Activities,1
+leisure,axe_throwing,1,Sports and Activities,1
+leisure,barbecue_fireplace,1,Outdoor Recreation,1
+leisure,bathing,1,Recreation,1
+leisure,cape,1,Outdoor Recreation,1
+leisure,dog_sledding,1,Outdoor Recreation,1
+leisure,dojo,1,Sports and Activities,1
+leisure,driving_range,1,Sports and Activities,1
+leisure,guide_service,1,Tourism,1
+leisure,leisure=swimming_area,1,Outdoor Recreation,1
+leisure,mall,1,Fashion and Accessories,1
+leisure,music,1,Entertainment,1
+leisure,music_venues,1,Entertainment,1
+leisure,park;swimming_pool,1,Outdoor Recreation,1
+leisure,play_land,1,Recreation,1
+leisure,rifle_range,1,Sports and Activities,1
+leisure,sea_bath,1,Outdoor Recreation,1
+leisure,shooting,1,Sports and Activities,1
+leisure,skate_ramp,1,Sports and Activities,1
+leisure,snorkelling,1,Outdoor Recreation,1
+leisure,soccer_golf_course,1,Sports and Activities,1
+leisure,sports and arts for kids and adults,1,Sports and Activities,1
+leisure,tent_space,1,Outdoor Recreation,1
+leisure,vacant,1,Leisure,1
+leisure,viewpoint,1,Tourism,1
+leisure,water_ski,1,Sports and Activities,1
+leisure,"yard, pasture",1,Outdoor Recreation,1
+leisure,yoga,1,Health and Beauty,1
+office,Security,1,Emergency Services,1
+office,archive,1,Office,1
+office,bureau_de_change,1,Financial Services,1
+office,cleaning,1,Home and Living,1
+office,commercial,1,Office,1
+office,cooperative,1,Financial Services,1
+office,design,1,Artisan Workshops,1
+office,driving_school,1,Education,1
+office,factory,1,Office,1
+office,förskola,1,Education,1
+office,geodesist,1,Office,1
+office,government;employment_agency,1,Office,1
+office,graphic_design,1,Office,1
+office,grocery,1,Groceries and Food,1
+office,harboumaster,1,Transportation,0
+office,home_care,1,Home and Living,1
+office,interior_design,1,Home and Living,1
+office,landlord,1,Financial Services,1
+office,media,1,Office,1
+office,medical,1,Healthcare,1
+office,pest_control,1,Office,1
+office,reseption,1,Office,1
+office,student_housing,1,Education,1
+office,sustainability issues,1,Education,1
+office,tax_advisor,1,Financial Services,1
+office,tourism,1,Office,1
+office,traffic_school,1,Education,1
+office,travel_agency,1,Office,1
+office,video,1,Entertainment,1
+office,visa,1,Office,1
+office,water_utility,1,Office,1
+office,web_development,1,Office,1
+shop,Interior design,1,Home and Living,1
+shop,Juice,1,Food and Drink,1
+shop,accounting,1,Financial Services,1
+shop,agricultural_vehicles,1,Automotive Services,1
+shop,alternative_medicine,1,Healthcare,1
+shop,archery,1,Sports and Activities,1
+shop,art;farm,1,Artisan Workshops,1
+shop,art_supplies,1,Craft,1
+shop,artist,1,Artisan Workshops,1
+shop,artwork,1,Artisan Workshops,1
+shop,atv;snowmobile;motorcycle;jetski,1,Outdoor Recreation,1
+shop,auction,1,Financial Services,1
+shop,audio_video,1,Entertainment,1
+shop,bakery;farm;florist,1,Food and Drink,1
+shop,bakery;pastry,1,Food and Drink,1
+shop,bathroom_furniture,1,Home and Living,1
+shop,bbq,1,Food and Drink,1
+shop,bicycle;motorcycle;groundskeeping,1,Automotive Services,1
+shop,bicycle_repair,1,Automotive Services,1
+shop,bike,1,Sports and Activities,1
+shop,bike_repair,1,Automotive Services,1
+shop,boat_accessories,1,Automotive Services,1
+shop,boat_parts,1,Automotive Services,1
+shop,boat_repair,1,Automotive Services,1
+shop,books;games;anime;model,1,Entertainment,1
+shop,building_materials,1,Home and Living,1
+shop,building_supplies,1,Home and Living,1
+shop,butcher;deli,1,Food and Drink,1
+shop,byggvaruhandel,1,Home and Living,1
+shop,cafe,1,Food and Drink,1
+shop,candy,1,Food and Drink,1
+shop,car;mobile_home,1,Automotive Services,1
+shop,"car_repair, vehicle_inspection",1,Automotive Services,1
+shop,car_wrecker,1,Automotive Services,1
+shop,carpet;curtain,1,Home and Living,1
+shop,ceramics,1,Artisan Workshops,1
+shop,cheese;deli,1,Food and Drink,1
+shop,cleaning products,1,Home and Living,1
+shop,clothes;outdoor;bakery,1,Shop,1
+shop,clothes;shoes,1,Fashion and Accessories,1
+shop,coffee;nuts,1,Food and Drink,1
+shop,coffee;tea,1,Food and Drink,1
+shop,coin,1,Financial Services,1
+shop,construction,1,Home and Living,1
+shop,construction_supplies,1,Home and Living,1
+shop,costume,1,Fashion and Accessories,1
+shop,cycle_repair,1,Automotive Services,1
+shop,decoration,1,Home and Living,1
+shop,design,1,Artisan Workshops,1
+shop,disc_golf,1,Sports and Activities,1
+shop,discount,1,Financial Services,1
+shop,diy,1,Craft,1
+shop,dry_cleaning;tailor,1,Artisan Workshops,1
+shop,eggs,1,Groceries and Food,1
+shop,electrical;vacuum_cleaner,1,Home and Living,1
+shop,energy,1,Shop,1
+shop,esoteric,1,Shop,1
+shop,estate,1,Shop,1
+shop,exotic,1,Food and Drink,1
+shop,farm;dairy,1,Groceries and Food,1
+shop,farm;garden_centre,1,Outdoor Recreation,1
+shop,fashion,1,Fashion and Accessories,1
+shop,firewood,1,Craft,1
+shop,fireworks,1,Entertainment,1
+shop,fitness_studio,1,Sports and Activities,1
+shop,furnace,1,Home and Living,1
+shop,furniture;clothes,1,Home and Living,1
+shop,garden,1,Outdoor Recreation,1
+shop,glove,1,Fashion and Accessories,1
+shop,handicraft,1,Craft,1
+shop,handmade,1,Artisan Workshops,1
+shop,health,1,Healthcare,1
+shop,home,1,Home and Living,1
+shop,hometextile,1,Home and Living,1
+shop,horse_equipment,1,Sports and Activities,1
+shop,husvagns_försäljning,1,Automotive Services,1
+shop,industrial_components,1,Office,1
+shop,joke,1,Entertainment,1
+shop,kennel,1,Recreation,1
+shop,kitchenware,1,Home and Living,1
+shop,kombucha,1,Food and Drink,1
+shop,landscaping,1,Home and Living,1
+shop,locksmith;shoes;learher;gloves,1,Artisan Workshops,1
+shop,machines,1,Craft,1
+shop,maps,1,Transportation,1
+shop,marine,1,Transportation,1
+shop,mobility_scooter,1,Transportation,1
+shop,motor,1,Automotive Services,1
+shop,motorcycle;bicycle,1,Automotive Services,1
+shop,motorcycle_parts,1,Automotive Services,1
+shop,motorvehicle,1,Automotive Services,1
+shop,network_supplies,1,Office,1
+shop,newsagent;bookmaker,1,Education,1
+shop,newspaper,1,Office,1
+shop,no,1,Shop,1
+shop,organic,1,Groceries and Food,1
+shop,orthopedics,1,Healthcare,1
+shop,outdoor;hunting,1,Outdoor Recreation,1
+shop,outlet,1,Fashion and Accessories,1
+shop,phone,1,Office,1
+shop,phone_repair,1,Artisan Workshops,1
+shop,photo_development,1,Artisan Workshops,1
+shop,photo_studio,1,Artisan Workshops,1
+shop,plumber,1,Artisan Workshops,1
+shop,point_of_sale,1,Financial Services,1
+shop,pool,1,Sports and Activities,1
+shop,pool_supplies,1,Home and Living,1
+shop,pools,1,Recreation,1
+shop,pyrotechnics,1,Craft,1
+shop,realtor,1,Office,1
+shop,satellite_tv,1,Entertainment,1
+shop,skate,1,Sports and Activities,1
+shop,skin_care,1,Health and Beauty,1
+shop,skincareproducts_and_scincaretreatments,1,Health and Beauty,1
+shop,smoking,1,Health and Beauty,1
+shop,snowmobile; jetski,1,Outdoor Recreation,1
+shop,socks,1,Fashion and Accessories,1
+shop,souvenir,1,Tourism,1
+shop,specialist,1,Healthcare,1
+shop,specialty_food_-_asian,1,Food and Drink,1
+shop,spiritual,1,Religious Places,1
+shop,stationery;copyshop,1,Office,1
+shop,supermarket;alcohol;outdoor,1,Groceries and Food,1
+shop,supplements,1,Shop,1
+shop,sweets;tobacco,1,Groceries and Food,1
+shop,tailor;laundry;shoe_repair,1,Artisan Workshops,1
+shop,tobacco;video,1,Entertainment,1
+shop,tool,1,Craft,1
+shop,tool_library,1,Craft,1
+shop,tractor,1,Automotive Services,1
+shop,trailer,1,Automotive Services,1
+shop,trophy,1,Craft,1
+shop,watch,1,Fashion and Accessories,1
+shop,water,1,Outdoor Recreation,1
+shop,wellness_and_beauty_shop,1,Health and Beauty,1
+shop,windsurfing,1,Sports and Activities,1
+shop,zoo,1,Recreation,1
+sport,9pin,1,Sports and Activities,1
+sport,Idrottshall,1,Sports and Activities,1
+sport,Skidanläggning,1,Sports and Activities,1
+sport,alpine,1,Outdoor Recreation,1
+sport,badminton,1,Sports and Activities,1
+sport,bmx,1,Sports and Activities,1
+sport,bridge,1,Transportation,1
+sport,cliff_diving,1,Outdoor Recreation,1
+sport,dog,1,Recreation,1
+sport,dog_agility,1,Sports and Activities,1
+sport,dog_training;dog,1,Sports and Activities,1
+sport,drag racing,1,Sports and Activities,1
+sport,fishing,1,Outdoor Recreation,1
+sport,floorball,1,Sports and Activities,1
+sport,gliding,1,Sports and Activities,1
+sport,hockey,1,Sports and Activities,1
+sport,hockey;ice_hockey,1,Sports and Activities,1
+sport,horse_racing,1,Sports and Activities,1
+sport,hunting,1,Outdoor Recreation,1
+sport,karate,1,Sports and Activities,1
+sport,kayak,1,Outdoor Recreation,1
+sport,kickboxing,1,Sports and Activities,1
+sport,kitesurfing,1,Sports and Activities,1
+sport,krav_maga,1,Sports and Activities,1
+sport,motor_bike,1,Sports and Activities,1
+sport,muay_thai,1,Sports and Activities,1
+sport,obstacle_course,1,Sports and Activities,1
+sport,orienteering;mtb;skiing,1,Outdoor Recreation,1
+sport,orienteering;skiing,1,Sports and Activities,1
+sport,orientering,1,Sports and Activities,1
+sport,paintball,1,Sports and Activities,1
+sport,paintball;airsoft,1,Sports and Activities,1
+sport,parachuting,1,Sports and Activities,1
+sport,pole_dance,1,Sports and Activities,1
+sport,skating,1,Sports and Activities,1
+sport,skiing;bmx;cross_country_skiing,1,Sports and Activities,1
+sport,skydiving;fallskärmshoppning;tandem,1,Sports and Activities,1
+sport,snorkeling,1,Outdoor Recreation,1
+sport,sports,1,Sports and Activities,1
+sport,volleyball,1,Sports and Activities,1
+sport,water_sports,1,Sports and Activities,1
+sport,windsurfing,1,Sports and Activities,1
+sport,workout,1,Sports and Activities,1
+tourism,Hunserödsmölla,1,Historic,1
+tourism,Outboard engine on rock,1,Outdoor Recreation,1
+tourism,archaeological_site,1,Historic,1
+tourism,ceramics,1,Artisan Workshops,1
+tourism,exhibition,1,Entertainment,1
+tourism,fountain,1,Outdoor Recreation,1
+tourism,guestbook,1,Tourism,1
+tourism,minor_attraction,1,Tourism,1
+tourism,museum_closed_for_renovation,1,Tourism,1
+tourism,picnic_sitel,1,Outdoor Recreation,1
+tourism,shingle_field,1,Outdoor Recreation,1
+tourism,sightseeing,1,Tourism,1
+tourism,spa_resort,1,Health and Beauty,1
+tourism,vacant,1,Tourism,1

@@ -45,8 +45,15 @@ ct.process <- function(county, mode=c("WALK", "TRANSIT"), fn=''){
   data.table::fwrite(access, file = output_path, row.names = FALSE)
 }
 
+# pt access
+for (county in counties){
+  print(paste("Processing county:", county))
+  ct.process(county = county)
+}
+
+# car access
 mode <- "CAR"
-for (county in counties.test){
+for (county in counties){
   print(paste("Processing county:", county))
   ct.process(county = county, mode = mode, fn = 'car')
 }

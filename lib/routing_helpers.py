@@ -16,12 +16,13 @@ with open(os.path.join(ROOT_dir, 'dbs', 'keys.yaml')) as f:
 def gtfs_downloader(region='sweden',
                     user='yuan',
                     region_operator='sl',
-                    skip_country=True):
+                    skip_country=True,
+                    api_version=3):
     # regional_operators = ["blekinge", "dt", "dintur", "gotland", "halland", "jlt", "klt", "krono", "jamtland",
     #             "norrbotten", "vasterbotten", "orebro", "skane", "sl", "sormland", "ul", "vastmanland",
     #             "varm", "vt", "xt", "otraf", "sj"]
     today = date.today()
-    folder = ROOT_dir + f"/dbs/gtfs_{region}_" + str(today)
+    folder = os.path.join(ROOT_dir, f"dbs/gtfs_{region}_" + str(today))
     if os.path.exists(folder) is not True:
         print(f"Downloading latest GTFS data for {region}...")
         os.mkdir(folder)
@@ -29,8 +30,12 @@ def gtfs_downloader(region='sweden',
     if ~skip_country:
         local_path_to_write = folder + "/sweden.zip"
         if os.path.exists(local_path_to_write) is not True:
-            gtfs_sweden = "https://opendata.samtrafiken.se/gtfs-sweden/sweden.zip?key="
-            response = requests.get(gtfs_sweden + keys_manager['gtfs_api'][user]['sweden_2_key'], stream=True)
+            if api_version == 3:
+                gtfs_sweden = "https://opendata.samtrafiken.se/gtfs-sweden/sweden.zip?key="
+                response = requests.get(gtfs_sweden + keys_manager['gtfs_api'][user]['sweden_2_key'], stream=True)
+            else:
+                gtfs_sweden = "https://api.resrobot.se/gtfs/sweden.zip?key="
+                response = requests.get(gtfs_sweden + keys_manager['gtfs_api'][user]['sweden_key'], stream=True)
             s = io.BytesIO(response.content)
             local_path_to_write = folder + "/sweden.zip"
             with open(local_path_to_write, 'wb') as f_out:
@@ -68,8 +73,8 @@ def gdf2poly(geodata=None, targetfile=None, buffer=0.03):
     F.close()
 
 
-def osm_country2region(osm_file=None, terget_file=None, poly_file=None):
-    command_line = f'''osmosis --read-pbf-fast file="{osm_file}" --bounding-polygon file="{poly_file}" --write-pbf file="{terget_file}"'''
+def osm_country2region(osm_file=None, terget_file=None, poly_file=None, osmosis_path=None):
+    command_line = f'''{osmosis_path} --read-pbf file="{osm_file}" --bounding-polygon file="{poly_file}" --write-pbf file="{terget_file}"'''
     os.system(command_line)
 
 

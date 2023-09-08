@@ -23,18 +23,20 @@ class CountyDataPrep4PTAccess:
         self.gdf_g = None
         self.counties = None
         self.gdf_z = None
+        self.user_grid = []
         self.user = preprocess.keys_manager['database']['user']
         self.password = preprocess.keys_manager['database']['password']
         self.port = preprocess.keys_manager['database']['port']
         self.db_name = preprocess.keys_manager['database']['name']
 
-    def load_counties(self):
+    def load_geo(self):
         engine = sqlalchemy.create_engine(f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
         self.gdf_z = gpd.GeoDataFrame.from_postgis(sql="""SELECT deso, geom FROM zones;""", con=engine)
         self.gdf_z.loc[:, 'deso_2'] = self.gdf_z.loc[:, 'deso'].apply(lambda x: x[:2])
         self.counties = self.gdf_z.loc[:, 'deso_2'].unique()
         self.home = pd.read_sql(sql="""SELECT uid, zone, deso FROM home_p;""", con=engine)
         self.home.loc[:, 'deso_2'] = self.home.loc[:, 'deso'].apply(lambda x: x[:2])
+        self.gdf_g = gpd.read_postgis(sql="""SELECT zone, pop, job, geom FROM grids;""", con=engine)
 
     def osm_extent(self, county=None):
         gdf_c = self.gdf_z.loc[self.gdf_z.deso_2 == county, :]
@@ -75,14 +77,14 @@ class CountyDataPrep4PTAccess:
         return convex_hull
 
     def od_data_prep(self, county=None, geo_extent=None):
-        engine = sqlalchemy.create_engine(f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
-        self.gdf_g = gpd.read_postgis(sql="""SELECT zone, pop, job, geom FROM grids;""", con=engine)
         # Refine destinations
         gdf_d = gpd.sjoin(self.gdf_g.loc[self.gdf_g.job > 0, :], geo_extent)
         gdf_d = gdf_d.drop(columns=['index_right']).rename(columns={'geom': 'geometry'}).set_geometry('geometry')
 
         # Refine origins
         df2p = self.home.loc[self.home.deso_2 == county, :].copy()
+        if len(self.user_grid) > 0:
+            df2p = df2p.loc[~df2p.zone.isin(self.user_grid), :]
         gdf_o = self.gdf_g.loc[self.gdf_g.zone.isin(df2p.zone), :].copy().\
             rename(columns={'geom': 'geometry'}).\
             set_geometry('geometry')
@@ -105,11 +107,13 @@ class CountyDataPrep4PTAccess:
         d_file = os.path.join(ROOT_dir, f"dbs/accessibility/data/destinations_{county}.csv")
         origins.to_csv(o_file, index=False)
         destinations.to_csv(d_file, index=False)
+        # Keep track of covered origins (user home grids)
+        self.user_grid += gdf_o.loc[:, 'zone'].values.tolist()
 
 
 if __name__ == '__main__':
     dp = CountyDataPrep4PTAccess()
-    dp.load_counties()
+    dp.load_geo()
     for c in tqdm(dp.counties, desc='Processing by county'):
         convex_hull = dp.osm_extent(county=c)
         dp.od_data_prep(county=c, geo_extent=convex_hull)

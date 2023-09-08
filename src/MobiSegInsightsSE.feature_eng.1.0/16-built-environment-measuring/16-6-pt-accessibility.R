@@ -20,8 +20,8 @@ counties <- c('01', '03', '04', '05', '06', '07',
               '17', '18', '19', '20', '21', '22',
               '23', '24', '25')
 
-ct.process <- function(county){
-  output_path <- paste0(tp_path, "/results/access_", county, ".csv")
+ct.process <- function(county, mode=c("WALK", "TRANSIT"), fn=''){
+  output_path <- paste0(tp_path, "/results/access_", fn, county, ".csv")
   data_path <- paste0(tp_path, "/c_", county)
   # Indicate the path where OSM and GTFS data are stored
   r5r_core <- setup_r5(data_path = data_path)
@@ -35,16 +35,18 @@ ct.process <- function(county){
                           origins = origins,
                           destinations = destinations,
                           opportunities_colnames = "job",
-                          mode = c("WALK", "TRANSIT"),
+                          mode = mode,
                           departure_datetime = departure_datetime,
                           decay_function = "step",
                           cutoffs = 30,
+                          max_trip_duration = 30,
                           verbose = FALSE,
                           progress = TRUE)
-  write.csv(access, file = output_path, row.names = FALSE)
+  data.table::fwrite(access, file = output_path, row.names = FALSE)
 }
 
-for (county in counties){
+mode <- "CAR"
+for (county in counties.test){
   print(paste("Processing county:", county))
-  ct.process(county = county)
+  ct.process(county = county, mode = mode, fn = 'car')
 }

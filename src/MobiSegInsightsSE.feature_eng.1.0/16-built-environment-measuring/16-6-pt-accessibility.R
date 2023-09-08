@@ -15,9 +15,10 @@ library(dplyr)
 # system.file returns the directory with example data inside the r5r package
 # set data path to directory containing your own data if not using the examples
 tp_path <- "dbs/accessibility" # system.file("extdata/poa", package = "r5r")
-counties <- c('14', '17', '18', '19', '20',
-              '21', '22', '23', '24', '25')
-counties.done <- c('01', '03', '04', '05', '06', '07', '08', '09', '10', '12', '13')
+counties <- c('01', '03', '04', '05', '06', '07',
+              '08', '09', '10', '12', '13', '14',
+              '17', '18', '19', '20', '21', '22',
+              '23', '24', '25')
 
 ct.process <- function(county){
   output_path <- paste0(tp_path, "/results/access_", county, ".csv")
@@ -47,4 +48,3 @@ for (county in counties){
   print(paste("Processing county:", county))
   ct.process(county = county)
 }
-

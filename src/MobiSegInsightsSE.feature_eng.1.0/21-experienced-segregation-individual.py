@@ -8,11 +8,11 @@ import ast
 from p_tqdm import p_map
 
 
-ROOT_dir = Path(__file__).parent.parent
+ROOT_dir = Path(__file__).parent.parent.parent
 sys.path.append(ROOT_dir)
-sys.path.insert(0, os.path.join(ROOT_dir, '/lib'))
+sys.path.insert(0, os.path.join(ROOT_dir, 'lib'))
 
-from lib import preprocess as preprocess
+import preprocess as preprocess
 
 
 class MobiSegAggregationIndividual:
@@ -64,7 +64,7 @@ class MobiSegAggregationIndividual:
         self.individual_data = pd.merge(self.individual_data, df_pop_wt, on='uid', how='left')
 
         print('Add individual residential accessibility metrics')
-        df_access = pd.read_sql("""SELECT uid, cum_jobs, cum_stops FROM built_env.access_grid;""", con=engine)
+        df_access = pd.read_sql("""SELECT uid, cum_jobs_car, cum_jobs_pt FROM built_env.access2jobs;""", con=engine)
         self.individual_data = pd.merge(self.individual_data, df_access, on='uid', how='left')
         print(self.individual_data.iloc[0])
 

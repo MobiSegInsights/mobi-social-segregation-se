@@ -74,10 +74,10 @@ plot.range <- function(var, data.stats, data, var.name, xlb, strp=F, y.log=F){
   return(g + coord_flip())
 }
 
-g1 <- plot.range(var='cum_jobs', data.stats = df.tst, data=df,
+g1 <- plot.range(var='cum_jobs_car', data.stats = df.tst, data=df,
                  var.name='Car accessibility to jobs', xlb="Nativity segregation change", strp=T, y.log=T)
-g2 <- plot.range(var='cum_stops', data.stats = df.tst, data=df,
-                 var.name='Access to transit stops', xlb="")
+g2 <- plot.range(var='cum_jobs_pt', data.stats = df.tst, data=df,
+                 var.name='Transit accessibility to jobs', xlb="", y.log=T)
 G <- ggarrange(g1, g2, common.legend = T)
 # ggsave(filename = "figures/seg_disp_ice_car.png", plot=g1, width = 5, height = 12, unit = "in", dpi = 300)
 # ggsave(filename = "figures/seg_disp_ice_transit.png", plot=g2, width = 5, height = 12, unit = "in", dpi = 300)

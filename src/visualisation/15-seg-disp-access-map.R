@@ -37,9 +37,12 @@ addalpha <- function(colors, alpha=1.0) {
 
 #------------ Experienced vs. residential --------------
 gdf <- st_read('results/seg_disp_access_map.geojson')
-gdf <- gdf %>%
-  filter(region_cat2 == 'Urban')
-
+gdf.g <- gdf %>%
+  filter(region_cat == 'Urban') %>%
+  filter(deso_2 == '14')
+gdf.s <- gdf %>%
+  filter(region_cat == 'Urban') %>%
+  filter(deso_2 == '01')
 
 # --- Access on the map ---
 keys_manager <- read_yaml('dbs/keys.yaml')
@@ -51,7 +54,8 @@ custom_palette <- addalpha(custom_palette, 0.5)
 custom_palette.leg <- colorRampPalette(c("firebrick1", "white", "dodgerblue1"))(length(breaks))
 custom_palette.leg <- addalpha(custom_palette.leg, 0.5)
 
-gdf$ice_e_col <- cut(gdf$ICE_e, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
+gdf.g$ice_e_col <- cut(gdf.g$ice_e, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
+gdf.s$ice_e_col <- cut(gdf.s$ice_e, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
 
 ## create a manual legend
 legend <- mapdeck::legend_element(
@@ -64,6 +68,7 @@ legend <- mapdeck::legend_element(
 js_legend.ice_e <- mapdeck::mapdeck_legend(legend)
 
 # Define the breaks and colors for transit
+## Gothenburg region
 breaks <- c(0, 1, 10, 100, 1000, 10000, 100000, 210000)
 
 # Create a palette based on the "plasma" color map
@@ -75,7 +80,7 @@ plasma_palette.leg <- viridis_pal(option = "plasma")(length(breaks))
 custom_palette.leg <- colorRampPalette(plasma_palette.leg)(length(breaks))
 custom_palette.leg <- addalpha(custom_palette.leg, 0.5)
 
-gdf$Access_transit_col <- cut(gdf$Access_transit, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
+gdf.g$Access_transit_col <- cut(gdf.g$Access_transit, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
 
 ## create a manual legend
 legend <- mapdeck::legend_element(
@@ -85,10 +90,10 @@ legend <- mapdeck::legend_element(
   , variable_type = 'gradient'
   , title = "Access by transit"
 )
-js_legend.access_transit <- mapdeck::mapdeck_legend(legend)
+js_legend.access_transit.g <- mapdeck::mapdeck_legend(legend)
 
-# Define the breaks and colors for car
-breaks <- c(100, 10000, 20000, 40000, 250000, 300000, 350000)
+## Stockholm region
+breaks <- c(0, 10, 1000, 10000, 100000, 310000, 550000)
 
 # Create a palette based on the "plasma" color map
 plasma_palette <- viridis_pal(option = "plasma")(length(breaks) - 1)
@@ -99,7 +104,7 @@ plasma_palette.leg <- viridis_pal(option = "plasma")(length(breaks))
 custom_palette.leg <- colorRampPalette(plasma_palette.leg)(length(breaks))
 custom_palette.leg <- addalpha(custom_palette.leg, 0.5)
 
-gdf$Access_car_col <- cut(gdf$Access_car, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
+gdf.s$Access_transit_col <- cut(gdf.s$Access_transit, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
 
 ## create a manual legend
 legend <- mapdeck::legend_element(
@@ -107,12 +112,36 @@ legend <- mapdeck::legend_element(
   , colours = custom_palette.leg
   , colour_type = "fill"
   , variable_type = 'gradient'
-  , title = "Access by car"
+  , title = "Access by transit"
 )
-js_legend.access_car <- mapdeck::mapdeck_legend(legend)
+js_legend.access_transit.s <- mapdeck::mapdeck_legend(legend)
+
+# # Define the breaks and colors for car
+# breaks <- c(100, 10000, 20000, 40000, 250000, 300000, 350000)
+#
+# # Create a palette based on the "plasma" color map
+# plasma_palette <- viridis_pal(option = "plasma")(length(breaks) - 1)
+# # Generate a list of colors
+# custom_palette <- colorRampPalette(plasma_palette)(length(breaks) - 1)
+# custom_palette <- addalpha(custom_palette, 0.5)
+# plasma_palette.leg <- viridis_pal(option = "plasma")(length(breaks))
+# custom_palette.leg <- colorRampPalette(plasma_palette.leg)(length(breaks))
+# custom_palette.leg <- addalpha(custom_palette.leg, 0.5)
+#
+# gdf$Access_car_col <- cut(gdf$Access_car, breaks = breaks, labels = custom_palette, include.lowest = TRUE)
+#
+# ## create a manual legend
+# legend <- mapdeck::legend_element(
+#   variables = breaks
+#   , colours = custom_palette.leg
+#   , colour_type = "fill"
+#   , variable_type = 'gradient'
+#   , title = "Access by car"
+# )
+# js_legend.access_car <- mapdeck::mapdeck_legend(legend)
 
 #---- Define the function for ploting ----
-plt.access <- function(geo=gdf, png='tst', col='ICE_e', legend=lgd, zoom=11) {
+plt.access <- function(geo=gdf, png='tst', col='ICE_e', legend=lgd, zoom=11, loc=c(11.974560, 57.708870)) {
   file.url <- paste0(getwd(), "/figures/tst.html")
   file.png <- paste0(getwd(), "/figures/", png, '.png')
   ms <- mapdeck_style("dark")
@@ -129,7 +158,7 @@ plt.access <- function(geo=gdf, png='tst', col='ICE_e', legend=lgd, zoom=11) {
                   , focus_layer = FALSE
               )%>%
     mapdeck_view(
-      location = c(11.974560, 57.708870),
+      location = loc,
       zoom = zoom,
       pitch = 45
     ) %>% saveWidget(file.url)
@@ -141,16 +170,20 @@ plt.access <- function(geo=gdf, png='tst', col='ICE_e', legend=lgd, zoom=11) {
           vheight = 900
   )
 }
-plt.access(geo=gdf, png='a_ice_e', col='ice_e_col', legend=js_legend.ice_e, zoom=10)
-plt.access(geo=gdf, png='a_access_pt', col='Access_transit_col', legend=js_legend.access_transit, zoom=10)
-plt.access(geo=gdf, png='a_access_car', col='Access_car_col', legend=js_legend.access_car, zoom=10)
+plt.access(geo=gdf.g, png='a_ice_e_g', col='ice_e_col', legend=js_legend.ice_e, zoom=10)
+plt.access(geo=gdf.g, png='a_access_pt_g', col='Access_transit_col', legend=js_legend.access_transit.g, zoom=10)
+# plt.access(geo=gdf, png='a_access_car_g', col='Access_car_col', legend=js_legend.access_car, zoom=10)
+stockholm <- c(18.063240, 59.334591)
+plt.access(geo=gdf.s, png='a_ice_e_s', col='ice_e_col', legend=js_legend.ice_e, zoom=9.4, loc = stockholm)
+plt.access(geo=gdf.s, png='a_access_pt_s', col='Access_transit_col', legend=js_legend.access_transit.s, zoom=9.4, loc = stockholm)
+# plt.access(geo=gdf, png='a_access_car_s', col='Access_car_col', legend=js_legend.access_car, zoom=10, loc = stockholm)
 
 # ----- Add labels to produced webshot images -----------
 add.label <- function(file="figures/a_access_car.png", label='(a)'){
   # Load the captured image
   image <- image_read(file)
   # Define the width of the space between the images (in pixels)
-  space_height <- 50
+  space_height <- 30
   # Get the dimensions (width and height) of image1
   image.info <- image_info(image)
   image_width <- image.info$width
@@ -162,34 +195,35 @@ add.label <- function(file="figures/a_access_car.png", label='(a)'){
   # Add a title using magick functions
   image_with_title <- combined_image %>%
     image_annotate(label, gravity = "northwest",
-                   color = "black", size = 40)
+                   color = "black", size = 25)
 
   # Save the modified image
   image_write(image_with_title, file) #
 
 }
-add.label(file="figures/a_access_car.png", label='(a)')
-add.label(file="figures/a_access_pt.png", label='(b)')
-add.label(file="figures/a_ice_e.png", label='(c)')
+add.label(file="figures/a_ice_e_g.png", label='(a)')
+add.label(file="figures/a_access_pt_g.png", label='(b)')
+add.label(file="figures/a_ice_e_s.png", label='(c)')
+add.label(file="figures/a_access_pt_s.png", label='(d)')
 
 # ----- Combine labeled images -------
 # Load the two input .png images
-image1 <- image_read("figures/a_access_car.png")
-image2 <- image_read("figures/a_access_pt.png")
-image3 <- image_read("figures/a_ice_e.png")
-# Define the width of the space between the images (in pixels)
-space_width <- 30
+image1 <- image_read("figures/a_ice_e_g.png")
+image2 <- image_read("figures/a_access_pt_g.png")
+image3 <- image_read("figures/a_ice_e_s.png")
+image4 <- image_read("figures/a_access_pt_s.png")
+
 # Get the dimensions (width and height) of image1
 image1_info <- image_info(image1)
 image1_width <- image1_info$width
 image1_height <- image1_info$height
 
 # Create a blank space image
-blank_space <- image_blank(space_width, image1_height, color = "white")
+blank_space_w <- image_blank(30, image1_height, color = "white")
+blank_space_h <- image_blank(image1_width * 2 + 30, 5, color = "white")
 
 # Combine the images horizontally (side by side)
-combined_image <- image_append(c(image1, blank_space, image2, blank_space, image3), stack = FALSE)
-#combined <- image_append(image_scale(c(combined_image, image_read("figures/seg_disp_access_all.png")),
-#                                    "3000"), stack = TRUE)
-# Save the combined image as a new .png file
+combined_image1 <- image_append(c(image1, blank_space_w, image2), stack = FALSE)
+combined_image2 <- image_append(c(image3, blank_space_w, image4), stack = FALSE)
+combined_image <- image_append(c(combined_image1, blank_space_h, combined_image2), stack = TRUE)
 image_write(combined_image, "figures/a_access_ice_combined.png")

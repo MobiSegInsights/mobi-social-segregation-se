@@ -10,12 +10,19 @@ from skmob.measures.individual import radius_of_gyration, distance_straight_line
 from tqdm import tqdm
 from p_tqdm import p_map
 import multiprocessing
+from statsmodels.stats.weightstats import DescrStatsW
 from lib import preprocess as preprocess
 
 
 ROOT_dir = Path(__file__).parent.parent
 with open(os.path.join(ROOT_dir, 'dbs', 'keys.yaml')) as f:
     keys_manager = yaml.load(f, Loader=yaml.FullLoader)
+
+
+def delta_ice(ice_r, ice_e):
+    if ice_r < 0:
+        return -(ice_e - ice_r)
+    return ice_e - ice_r
 
 
 class MobilityMeasuresIndividual:
@@ -32,7 +39,7 @@ class MobilityMeasuresIndividual:
 
     def load_home_seg_uid(self):
         engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
         print("Loading home and segregation data.")
         self.home = pd.read_sql_query(sql="""SELECT uid, zone, deso, wt_p, lng, lat FROM home_p;""", con=engine)
         # self.resi_seg = pd.read_sql_query(sql="""SELECT region, var, evenness, iso FROM resi_seg_deso;""", con=engine)
@@ -40,7 +47,7 @@ class MobilityMeasuresIndividual:
 
     def load_mobi_data(self, test=False, traj_format=True):
         engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
         print("Loading mobility data.")
         if test:
             self.mobi_data = pd.read_sql_query(sql="""SELECT uid, "localtime", dur, lat, lng, 
@@ -105,7 +112,7 @@ class MobilitySegregationPlace(MobilityMeasuresIndividual):
 
     def load_deso_zones(self):
         engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
         print('Loading DeSO zones...')
         self.zones = gpd.GeoDataFrame.from_postgis(sql="""SELECT deso, geom FROM zones;""", con=engine)
         self.zones = self.zones.to_crs(4326)
@@ -190,6 +197,94 @@ class MobilitySegregationPlace(MobilityMeasuresIndividual):
                                                     'deso', 'time_span']]
             print('Save the data...')
             engine = sqlalchemy.create_engine(
-                f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}')
+                f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
             self.mobi_data.to_sql('mobi_seg_deso_raw', engine, schema='segregation', index=False,
                       method='multi', if_exists='append', chunksize=10000)
+
+
+class AccessVSSegregation:
+    def __init__(self):
+        self.data = None
+        self.pop = None
+        self.user = preprocess.keys_manager['database']['user']
+        self.password = preprocess.keys_manager['database']['password']
+        self.port = preprocess.keys_manager['database']['port']
+        self.db_name = preprocess.keys_manager['database']['name']
+
+    def load_data_and_process(self):
+        self.data = pd.read_parquet(os.path.join(ROOT_dir, 'results/data4model_individual.parquet'))
+        self.data = self.data.loc[(self.data['weekday'] == 1) & (self.data['holiday'] == 0), :]
+        self.pop = self.data.wt_p.sum()
+        # Keep relevant columns for analysis
+        cols = ['uid', 'region', 'wt_p',
+                'car_ownership', 'radius_of_gyration', 'median_distance_from_home',
+                'cum_jobs_pt', 'cum_jobs_car',
+                'ice_birth_resi', 'ice_birth']
+        self.data = self.data[cols].rename(columns={'ice_birth_resi': 'ice_r',
+                                                    'ice_birth': 'ice_e'})
+
+        # Add region county code and land-use type
+        self.data.loc[:, 'deso_2'] = self.data['region'].apply(lambda x: x[0:2])
+        self.data.loc[:, 'region_cat'] = self.data['region']. \
+            apply(lambda x: 'Rural/Suburban' if x[4] in ('A', 'B') else 'Urban')
+
+        # Delta ice - segregation disparity
+        self.data.loc[:, 'delta_ice'] = self.data.apply(lambda row: delta_ice(row['ice_r'], row['ice_e']), axis=1)
+        self.data.loc[:, 'seg_change'] = self.data['delta_ice'].apply(lambda x: 'inc' if x > 0 else 'dec')
+
+        # Control for groups
+        self.data.loc[:, 'car_op_cat'] = pd.cut(self.data['car_ownership'],
+                                                bins=[0.01, 0.35, 0.53, 1.72],
+                                                labels=['L', 'M', 'H'])
+        self.data.loc[:, 'ice_r_grp'] = pd.cut(self.data.ice_r,
+                                               bins=[-1, -0.2, 0.2, 1],
+                                               labels=['F', 'N', 'D'])
+
+    def add_access_groups(self, num_grps=None):
+        self.data.loc[:, 'access_grp_car'] = pd.qcut(self.data['cum_jobs_car'], num_grps)
+        self.data.loc[:, 'access_grp_pt'] = pd.qcut(self.data['cum_jobs_pt'], num_grps)
+
+        def car_grp_wm(data):
+            return pd.Series({'access_car': np.average(data['cum_jobs_car'], weights=data['wt_p'])})
+
+        def pt_grp_wm(data):
+            return pd.Series({'access_pt': np.average(data['cum_jobs_pt'], weights=data['wt_p'])})
+
+        df_car = self.data.groupby('access_grp_car').apply(car_grp_wm).reset_index()
+        df_pt = self.data.groupby('access_grp_pt').apply(pt_grp_wm).reset_index()
+        df2 = pd.merge(self.data, df_car, on='access_grp_car')
+        df2 = pd.merge(df2, df_pt, on='access_grp_pt')
+        self.data = df2.drop(columns=['access_grp_car', 'access_grp_pt']).copy()
+
+    def grp_stats_com(self, data=None, var=None):
+        stat_dict = {'share': data.wt_p.sum() / self.pop * 100}
+        wdf = DescrStatsW(data[var], weights=data['wt_p'], ddof=1)
+        sts = wdf.quantile([0.25, 0.50, 0.75])
+        q25 = sts.values[0]
+        q50 = sts.values[1]
+        q75 = sts.values[2]
+        stat_dict['mean'] = wdf.mean
+        stat_dict['q25'] = q25
+        stat_dict['q50'] = q50
+        stat_dict['q75'] = q75
+        stat_dict['var'] = var
+        return pd.Series(stat_dict)
+
+    def multi_var_mode_access(self,
+                              df=None,
+                              grp_by_set=['ice_r_grp', 'region_cat'],
+                              var_set=None):
+        list_df = []
+        for var in var_set:
+            res = df.groupby(grp_by_set + ['access_car']). \
+                apply(lambda data: self.grp_stats_com(data, var=var)). \
+                reset_index().rename(columns={'access_car': 'access'})
+            res.loc[:, 'mode'] = 'Car'
+            list_df.append(res)
+
+            res = df.groupby(grp_by_set + ['access_pt']). \
+                apply(lambda data: self.grp_stats_com(data, var=var)). \
+                reset_index().rename(columns={'access_pt': 'access'})
+            res.loc[:, 'mode'] = 'Transit'
+            list_df.append(res)
+        return pd.concat(list_df)

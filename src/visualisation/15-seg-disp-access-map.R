@@ -172,6 +172,15 @@ plt.access <- function(geo=gdf, png='tst', col='ICE_e', legend=lgd, zoom=11, loc
 }
 plt.access(geo=gdf.g, png='a_ice_e_g', col='ice_e_col', legend=js_legend.ice_e, zoom=10)
 plt.access(geo=gdf.g, png='a_access_pt_g', col='Access_transit_col', legend=js_legend.access_transit.g, zoom=10)
+plt.access(geo=filter(gdf.g, ice_r_grp!='N'), png='a_ice_e_g_fd', col='ice_e_col', legend=js_legend.ice_e, zoom=10)
+plt.access(geo=filter(gdf.g, ice_r_grp!='N'),, png='a_access_pt_g_fd', col='Access_transit_col', legend=js_legend.access_transit.g, zoom=10)
+plt.access(geo=filter(gdf.g, (ice_r_grp=='F') & (Access_transit <= 20000)), png='a_ice_e_g_f_l', col='ice_e_col', legend=js_legend.ice_e, zoom=10)
+plt.access(geo=filter(gdf.g, (ice_r_grp=='F') & (Access_transit <= 20000)), png='a_access_pt_g_f_l', col='Access_transit_col',
+           legend=js_legend.access_transit.g, zoom=10)
+plt.access(geo=filter(gdf.g, (ice_r_grp=='F') & (Access_transit > 20000)), png='a_ice_e_g_f_h', col='ice_e_col', legend=js_legend.ice_e, zoom=10)
+plt.access(geo=filter(gdf.g, (ice_r_grp=='F') & (Access_transit > 20000)), png='a_access_pt_g_f_h', col='Access_transit_col',
+           legend=js_legend.access_transit.g, zoom=10)
+
 # plt.access(geo=gdf, png='a_access_car_g', col='Access_car_col', legend=js_legend.access_car, zoom=10)
 stockholm <- c(18.063240, 59.334591)
 plt.access(geo=gdf.s, png='a_ice_e_s', col='ice_e_col', legend=js_legend.ice_e, zoom=9.4, loc = stockholm)

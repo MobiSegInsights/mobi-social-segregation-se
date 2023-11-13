@@ -136,3 +136,8 @@ G <- ggarrange(G0, g3, g4, ncol = 3, nrow = 1, widths = c(2, 1, 1),
                labels = c('', '(b)', ''))
 ggsave(filename = "figures/seg_disp_access_cities_pt_F.png", plot=G,
        width = 15, height = 6, unit = "in", dpi = 300, bg = 'white')
+
+g2 <- g2 +
+  geom_vline(xintercept = 20000)
+ggsave(filename = "figures/seg_disp_access_g_pt_F.png", plot=g2,
+       width = 4, height = 6, unit = "in", dpi = 300, bg = 'white')

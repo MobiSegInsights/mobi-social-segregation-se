@@ -57,3 +57,13 @@ for (county in counties){
   print(paste("Processing county:", county))
   ct.process(county = county, mode = mode, fn = 'car')
 }
+
+# A test of mode WALK and TRANSIT
+county <- 14
+mode <- 'WALK'
+print(paste("Processing mode:", mode))
+ct.process(county = county, mode = mode, fn = 'tst_walk')
+
+mode <- c('WALK', 'TRANSIT')
+print(paste("Processing mode:", mode))
+ct.process(county = county, mode = mode, fn = 'tst_transit')

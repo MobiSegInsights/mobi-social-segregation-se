@@ -9,6 +9,7 @@ import skmob
 from skmob.measures.individual import radius_of_gyration, distance_straight_line, number_of_locations, number_of_visits
 from tqdm import tqdm
 from p_tqdm import p_map
+import scipy.stats as stats
 import multiprocessing
 from statsmodels.stats.weightstats import DescrStatsW
 from lib import preprocess as preprocess
@@ -23,6 +24,30 @@ def delta_ice(ice_r, ice_e):
     if ice_r < 0:
         return -(ice_e - ice_r)
     return ice_e - ice_r
+
+
+def ice_group(ice, threshold=0):
+    statistic, p_value = stats.shapiro(ice)
+    if p_value > 0.05:
+        t_statistic, t_p_value = stats.ttest_1samp(ice, threshold, alternative='greater')
+        if t_p_value < 0.05:
+            return 'D'
+        else:
+            t_statistic, t_p_value = stats.ttest_1samp(ice, -threshold, alternative='less')
+            if t_p_value < 0.05:
+                return 'F'
+            else:
+                return 'N'
+    else:
+        t_statistic, t_p_value = stats.wilcoxon(ice-threshold, alternative='greater')
+        if t_p_value < 0.05:
+            return 'D'
+        else:
+            t_statistic, t_p_value = stats.wilcoxon(ice+threshold, alternative='less')
+            if t_p_value < 0.05:
+                return 'F'
+            else:
+                return 'N'
 
 
 class MobilityMeasuresIndividual:

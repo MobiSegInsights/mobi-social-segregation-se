@@ -143,6 +143,6 @@ if __name__ == '__main__':
     seg_indi = MobiSegAggregationIndividual()
     seg_indi.load_individual_data(grp_num=12, test=False, old=False, drop_home=True)
     seg_indi.load_zonal_data()
-    for i in range(1, 6):
+    for i in range(6, 51):
         print(f'Calculating simulation {i}.')
         seg_indi.aggregating_metrics_indi(sim=i)

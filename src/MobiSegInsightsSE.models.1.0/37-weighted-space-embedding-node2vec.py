@@ -55,7 +55,7 @@ def create_dataset(targets, contexts, labels, weights, batch_size):
 
 class WeightedNode2Vec:
     def __init__(self):
-        self.G = nx.read_graphml("dbs/graphs/space_space_weekday1_holiday0_hex.graphml")
+        self.G = nx.read_graphml("dbs/graphs/space_space_weekday1_holiday0_poi.graphml")
         self.vocabulary = None
         self.vocabulary_lookup = None
         self.walks = None
@@ -223,8 +223,8 @@ if __name__ == '__main__':
     print("Embeddings shape:", space_embeddings.shape)
 
     print('Save the embeddings.')
-    out_v = io.open(os.path.join(ROOT_dir, "dbs/graphs/embeddings.tsv"), "w", encoding="utf-8")
-    out_m = io.open(os.path.join(ROOT_dir, "dbs/graphs/metadata.tsv"), "w", encoding="utf-8")
+    out_v = io.open(os.path.join(ROOT_dir, "dbs/graphs/embeddings_poi.tsv"), "w", encoding="utf-8")
+    out_m = io.open(os.path.join(ROOT_dir, "dbs/graphs/metadata_poi.tsv"), "w", encoding="utf-8")
 
     for idx, space_id in enumerate(wn.vocabulary[1:]):
         vector = space_embeddings[idx]

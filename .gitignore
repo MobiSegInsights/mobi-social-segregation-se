@@ -8,4 +8,5 @@ legacy
 .Rproj.user
 apps
 tests
+figures/graphs
 src/MobiSegInsightsSE.etl.1.0/osm2pgsql-1.9.1-x64

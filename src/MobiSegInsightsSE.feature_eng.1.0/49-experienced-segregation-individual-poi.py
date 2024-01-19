@@ -10,6 +10,7 @@ import ast
 import random
 from tqdm import tqdm
 from p_tqdm import p_map
+from sklearn.neighbors import KDTree
 
 
 ROOT_dir = Path(__file__).parent.parent.parent
@@ -34,7 +35,10 @@ def sim_expand(x):
 class MobiSegAggregationIndividual:
     def __init__(self):
         self.mobi_data = None
+        self.resi = None
+        self.gdf_pois = None
         self.zonal_seg = None
+        self.tree = None
         self.deso_sim_matrix = None
         self.zones = None
         self.user = preprocess.keys_manager['database']['user']
@@ -42,10 +46,21 @@ class MobiSegAggregationIndividual:
         self.port = preprocess.keys_manager['database']['port']
         self.db_name = preprocess.keys_manager['database']['name']
 
-    def load_individual_data(self, grp_num=30, test=False):
+    def poi_data_loader(self):
+        print('Load POI data.')
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
-        print('Load mobility data and add hexagons.')
+        # POIs in Sweden
+        self.gdf_pois = gpd.GeoDataFrame.from_postgis(sql="""SELECT osm_id, "Tag", geom FROM built_env.pois;""",
+                                                      con=engine)
+        self.gdf_pois = self.gdf_pois.to_crs(3006)
+        self.gdf_pois.loc[:, 'y'] = self.gdf_pois.geom.y
+        self.gdf_pois.loc[:, 'x'] = self.gdf_pois.geom.x
+
+    def load_individual_data(self, grp_num=30, test=False, save_raw=False):
+        engine = sqlalchemy.create_engine(
+            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
+        print('Load mobility data and add pois.')
         self.zones = gpd.GeoDataFrame.from_postgis(sql="""SELECT deso, hex_id, geom FROM spatial_units;""",
                                                    con=engine)
         if test:
@@ -55,32 +70,33 @@ class MobiSegAggregationIndividual:
         else:
             self.mobi_data = pd.read_sql(sql='''SELECT uid, lat, lng, holiday, weekday, wt_total, deso, time_span
                                                 FROM segregation.mobi_seg_deso_raw;''', con=engine)
-        columns2keep = ['uid', 'holiday', 'weekday', 'wt_total', 'time_span', 'deso']
-        deso_list = self.zones.loc[self.zones['hex_id'] == '0', 'deso'].values
-        hex_deso_list = self.zones.loc[self.zones['hex_id'] != '0', 'deso'].unique()
-        geo_deso = self.mobi_data.loc[self.mobi_data['deso'].isin(deso_list), columns2keep]
-        geo_hex = self.mobi_data.loc[self.mobi_data['deso'].isin(hex_deso_list), :]
+        gdf_stops = preprocess.df2gdf_point(self.mobi_data, 'lng', 'lat', crs=4326, drop=False)
+        df_home = pd.read_sql(sql=f"""SELECT uid, lat, lng FROM home_p;""", con=engine)
+        df_home.loc[:, 'home'] = 1
+        gdf_stops = pd.merge(gdf_stops, df_home, on=['uid', 'lat', 'lng'], how='left')
+        gdf_stops.fillna(0, inplace=True)
 
-        geo_deso.loc[:, 'hex'] = geo_deso.loc[:, 'deso']
+        # Process stops
+        gdf_stops = gdf_stops.to_crs(3006)
+        gdf_stops.loc[:, 'y'] = gdf_stops.geometry.y
+        gdf_stops.loc[:, 'x'] = gdf_stops.geometry.x
+        print(len(gdf_stops))
+        gdf_stops.replace([np.inf, -np.inf], np.nan, inplace=True)
+        gdf_stops.dropna(subset=["x", "y"], how="any", inplace=True)
+        print("After processing infinite values", len(gdf_stops))
 
-        def find_hex(data):
-            # uid, lat, lng, wt_total, dur, hex_id*
-            deso = data.deso.values[0]
-            d = data.copy()
-            gdf_d = preprocess.df2gdf_point(d, x_field='lng', y_field='lat', crs=4326, drop=False)
-            gdf_d = gpd.sjoin(gdf_d,
-                              self.zones.loc[self.zones['deso'] == deso, :].drop(columns=['deso']),
-                              how='inner')
-            return gdf_d[['uid', 'holiday', 'weekday', 'wt_total', 'time_span', 'hex_id']].\
-                rename(columns={'hex_id': 'hex'})
-
-        print("Find hexagons for geolocations by DeSO zone.")
-        tqdm.pandas()
-        geo4graph = geo_hex.groupby('deso').progress_apply(find_hex).reset_index()
-        if test:
-            self.mobi_data = geo4graph
-        else:
-            self.mobi_data = pd.concat([geo4graph, geo_deso])
+        # Find POI for each stop
+        print('Find POI for each stop')
+        self.tree = KDTree(self.gdf_pois[["y", "x"]], metric="euclidean")
+        ind, dist = self.tree.query_radius(gdf_stops[["y", "x"]].to_records(index=False).tolist(),
+                                           r=300, return_distance=True, count_only=False, sort_results=True)
+        gdf_stops.loc[:, 'poi_num'] = [len(x) for x in ind]
+        gdf_stops.loc[gdf_stops.poi_num > 0, 'osm_id'] = [self.gdf_pois.loc[x[0], 'osm_id'] for x in ind if len(x) > 0]
+        gdf_stops.loc[gdf_stops.poi_num > 0, 'dist'] = [x[0] for x in dist if len(x) > 0]
+        self.mobi_data = pd.merge(gdf_stops, self.gdf_pois[['osm_id', 'Tag']], on='osm_id', how='left')
+        columns2keep = ['uid', 'deso', 'home', 'osm_id', 'Tag', 'dist', 'holiday', 'weekday', 'wt_total', 'time_span']
+        self.mobi_data = self.mobi_data[columns2keep]
+        print(self.mobi_data.iloc[0])
 
         # Group users
         random.seed(1)
@@ -93,33 +109,31 @@ class MobiSegAggregationIndividual:
             print('Test mode, only look at 10000 users.')
             self.mobi_data = self.mobi_data.loc[self.mobi_data['gp'] == 1, :]
         print(self.mobi_data.iloc[0])
-        if not test:
-            print('Save mobility data at mixed-hexagon level.')
-            self.mobi_data.to_sql('mobi_seg_hex_raw', engine, schema='segregation', index=False,
-                      method='multi', if_exists='append', chunksize=10000)
-
-    def load_saved_individual_data(self, test=False):
-        engine = sqlalchemy.create_engine(
-            f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
-        if test:
-            self.mobi_data = pd.read_sql(sql='''SELECT * FROM segregation.mobi_seg_hex_raw 
-                                                LIMIT 100000;''', con=engine)
-        else:
-            self.mobi_data = pd.read_sql(sql='''SELECT * FROM segregation.mobi_seg_hex_raw;''', con=engine)
+        if (not test) & save_raw:
+            print('Save mobility data at poi level.')
+            self.mobi_data.to_sql('mobi_seg_poi_raw', engine, schema='segregation', index=False,
+                                  method='multi', if_exists='append', chunksize=10000)
 
     def load_zonal_data(self):
-        print('Load segregation metrics at mixed-hexagon zones...')
+        print('Load segregation metrics at the poi level...')
         engine = sqlalchemy.create_engine(
             f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
-        zonal_seg_ = pd.read_sql(sql='''SELECT hex, time_seq, ice_birth, weekday, holiday
-                                            FROM segregation.mobi_seg_hex;''', con=engine)
+        zonal_seg_ = pd.read_sql(sql='''SELECT osm_id, time_seq, ice_birth, weekday, holiday
+                                            FROM segregation.mobi_seg_poi;''', con=engine)
         self.zonal_seg = dict()
         lbs = [['w0h0', 'w0h1'], ['w1h0', 'w1h1']]
         for weekday in (0, 1):
             for holiday in (0, 1):
                 temp_ = zonal_seg_.loc[(zonal_seg_.weekday == weekday) & (zonal_seg_.holiday == holiday)].\
                     drop(columns=['weekday', 'holiday'])
-                self.zonal_seg[lbs[weekday][holiday]] = temp_.pivot(index='time_seq', columns='hex', values='ice_birth')
+                self.zonal_seg[lbs[weekday][holiday]] = temp_.pivot(index='time_seq',
+                                                                    columns='osm_id',
+                                                                    values='ice_birth')
+        print('Load residential segregation for being at home...')
+        self.resi = pd.read_sql(sql='''SELECT region AS deso, ice AS ice_r
+                                       FROM segregation.resi_seg_deso
+                                       WHERE var='birth_region';''', con=engine)
+        self.resi = dict(zip(self.resi.deso, self.resi.ice_r))
 
     def aggregating_metrics_indi(self):
         def time_seq_median(data):
@@ -148,15 +162,21 @@ class MobiSegAggregationIndividual:
 
             print(f'Merge experienced segregation level.')
 
-            def hex_time_to_seg(row):
-                try:
-                    x = self.zonal_seg[f"w{int(row['weekday'])}h{int(row['holiday'])}"].\
-                        loc[(row['time_seq'], row['hex'])]
-                except:
-                    x = 9
+            def poi_time_to_seg(row):
+                if row['home'] == 0:
+                    try:
+                        x = self.zonal_seg[f"w{int(row['weekday'])}h{int(row['holiday'])}"].\
+                            loc[(row['time_seq'], row['osm_id'])]
+                    except:
+                        x = 9
+                else:
+                    try:
+                        x = self.resi[row['deso']]
+                    except:
+                        x = 9
                 return x
             tqdm.pandas()
-            df.loc[:, 'ice_birth'] = df.progress_apply(lambda row: hex_time_to_seg(row), axis=1)
+            df.loc[:, 'ice_birth'] = df.progress_apply(lambda row: poi_time_to_seg(row), axis=1)
             share = len(df.loc[df.ice_birth == 9, :]) / len(df) * 100
             print(f"Share of missing values: {share} %.")
             df = df.loc[df.ice_birth != 9, :]
@@ -166,14 +186,14 @@ class MobiSegAggregationIndividual:
 
             engine = sqlalchemy.create_engine(
                 f'postgresql://{self.user}:{self.password}@localhost:{self.port}/{self.db_name}?gssencmode=disable')
-            df.to_sql('mobi_seg_hex_individual', engine, schema='segregation', index=False,
+            df.to_sql('mobi_seg_poi_individual', engine, schema='segregation', index=False,
                       method='multi', if_exists='append', chunksize=10000)
 
 
 if __name__ == '__main__':
     # Aggregating metrics individually (experienced segregation)
     seg_indi = MobiSegAggregationIndividual()
-    # seg_indi.load_individual_data(grp_num=12, test=False)
-    seg_indi.load_saved_individual_data(test=False)
+    seg_indi.poi_data_loader()
+    seg_indi.load_individual_data(grp_num=12, test=False, save_raw=True)
     seg_indi.load_zonal_data()
     seg_indi.aggregating_metrics_indi()

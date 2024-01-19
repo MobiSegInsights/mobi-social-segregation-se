@@ -3,6 +3,9 @@ import torch_geometric
 import networkx as nx
 import pandas as pd
 from tqdm import tqdm
+# import umap
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 def graph_to_edge_list(G):
@@ -162,4 +165,166 @@ def generic_weighted_projected_graph(B, nodes, weight_function=None, num_cpus=4)
     G.add_weighted_edges_from(list(df.to_records(index=False)))
     return G
 
+
+def embeddings_umap(emb=None, labels=None, field_label=None):
+    """
+    :param emb: numpy array, n x 64 array of embeddings
+    :param labels: numpy array, categorical level of each sample row
+    :param field_label: string, column name for the new dataframe
+    :return: dataframe, ['x', 'y', field_label] after reducing dimensions
+    """
+    reducer = umap.UMAP()
+    embedded_data = reducer.fit_transform(emb)
+    df_emb2d = pd.DataFrame(embedded_data, columns=['x', 'y'])
+    df_emb2d.loc[:, field_label] = labels
+    return df_emb2d
+
+
+def embeddings_umap_plot(data=None, cat=None, labels=None, colors=None):
+    """
+    :param data: dataframe, reduced dimensions from umap
+    :param cat: string, column name of the categorical variable
+    :param labels: list of strings, levels of cat for visualizing
+    :param colors: list of strings, colors for the visualized levels of cat
+    :return: None
+    """
+    plt.figure(figsize=(10, 8))
+    if labels is not None:
+        sns.scatterplot(data=data.loc[data[cat].isin(labels), :],
+                        x="x", y="y", hue=cat, hue_order=labels,
+                        palette=colors, alpha=0.5, s=20)
+    else:
+        sns.scatterplot(data=data,
+                        x="x", y="y", hue=cat, hue_order=labels,
+                        palette=colors, alpha=0.5, s=20)
+    plt.title('UMAP Visualization of Dataset')
+    plt.xlabel('UMAP Dimension 1')
+    plt.ylabel('UMAP Dimension 2')
+    plt.show()
+
+
+def projection_plot(data=None, cat=None, labels=None, colors=None,
+                    x_field=None, y_field=None,
+                    x_lb=None, y_lb=None, multi=True):
+    """
+    :param y_lb: string, y-axis label
+    :param x_lb: string, x-axis label
+    :param y_field: string, column to put on the y-axis
+    :param x_field: string, column to put on the x-axis
+    :param data: dataframe, reduced dimensions from umap
+    :param cat: string, column name of the categorical variable
+    :param labels: list of strings, levels of cat for visualizing
+    :param colors: list of strings, colors for the visualized levels of cat
+    :return: None
+    """
+    plt.figure(figsize=(8, 8))
+    if multi:
+        if labels is not None:
+            sns.scatterplot(data=data.loc[data[cat].isin(labels), :],
+                            x=x_field, y=y_field, hue=cat, hue_order=labels,
+                            palette=colors, alpha=0.5, s=20)
+        else:
+            sns.scatterplot(data=data,
+                            x=x_field, y=y_field, hue=cat, hue_order=labels,
+                            palette=colors, alpha=0.5, s=20)
+    else:
+        sns.scatterplot(data=data, x=x_field, y=y_field, alpha=0.5, s=20)
+    plt.title('POI projections')
+    plt.xlabel(x_lb)
+    plt.ylabel(y_lb)
+    plt.show()
+
+
+def scatter_plot(data=None, x_field=None, y_field=None, cat=None, labels=None, colors=None):
+    """
+    :param y_field: string, y column name
+    :param x_field: string, x column name
+    :param data: dataframe, reduced dimensions from umap
+    :param cat: string, column name of the categorical variable
+    :param labels: list of strings, levels of cat for visualizing
+    :param colors: list of strings, colors for the visualized levels of cat
+    :return: None
+    """
+    plt.figure(figsize=(10, 8))
+    if labels is not None:
+        sns.scatterplot(data=data.loc[data[cat].isin(labels), :],
+                        x=x_field, y=y_field, hue=cat, hue_order=labels,
+                        palette=colors, alpha=0.5, s=20)
+    else:
+        sns.scatterplot(data=data, x=x_field, y=y_field, alpha=0.5, s=20)
+    plt.xlabel(x_field)
+    plt.ylabel(y_field)
+    plt.show()
+
+
+def single_dimension_proj(df=None, dim=None, dim_name=None):
+    labels = ["D", "N", "F"]
+    colors = ["#af887f", "gray", "#7f88af"]
+    f, ax = plt.subplots(figsize=(4, 4))
+    df2plot_f = df.loc[:, [dim, 'ice_birth_cat']]
+    sns.histplot(data=df2plot_f, x=dim, hue='ice_birth_cat',
+                 bins=35, stat="probability", common_norm=False,
+                 hue_order=labels, ax=ax, fill=False, alpha=0.7, linewidth=2,
+                 palette=colors, element='poly', legend=False)
+    f.legend(labels=labels, loc='upper right',
+             frameon=False, prop={'size': 12}, labelcolor='0.2', ncol=2)
+
+    ax.set(ylabel='Fraction of zones', xlabel=f"Projection")
+    ax.set_title(dim_name, weight='bold', loc='left', size=14)
+    for axis in ['bottom', 'left']:
+        ax.spines[axis].set_linewidth(1)
+        ax.spines[axis].set_color('0.2')
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    ax.tick_params(width=1, color='0.2')
+
+    plt.xticks(size=14, color='0.2')
+    plt.yticks(size=14, color='0.2')
+    ax.set_ylim(0, 0.2)
+    ax.set_xlabel(ax.get_xlabel(), fontsize=14, color='0.2')
+    ax.set_ylabel(ax.get_ylabel(), fontsize=14, color='0.2')
+    plt.tight_layout()
+    return f
+
+
+def single_dimension_proj_poi(df=None, dim=None, dim_name=None, grp='D'):
+    f, ax = plt.subplots(figsize=(6, 6))
+    df2plot_f = df.loc[:, [dim, 'poi_type']]
+    poi_types = df.poi_type.unique()
+    sns.histplot(data=df2plot_f, x=dim, hue='poi_type',
+                 bins=50, stat="probability", common_norm=False,
+                 ax=ax, fill=False, alpha=0.8, linewidth=1.5,
+                 element='poly', legend=False)
+    f.legend(labels=poi_types,
+             loc='upper right',
+             frameon=False,
+             prop={'size': 12},
+             labelcolor='0.2',
+             ncol=1)
+
+    ax.set(ylabel='Fraction of POIs', xlabel=f"Projection on {dim_name}")
+    # ax.set_title(dim_name, weight='bold', loc='left', size=14)
+    for axis in ['bottom', 'left']:
+        ax.spines[axis].set_linewidth(1)
+        ax.spines[axis].set_color('0.2')
+
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+
+    ax.tick_params(width=1, color='0.2')
+
+    plt.xticks(size=14, color='0.2')
+    plt.yticks(size=14, color='0.2')
+    # ax.set_yscale('log')
+    if grp == 'D':
+        ax.set_xlim(0.8, 1)
+        ax.set_ylim(0, 0.1)
+    else:
+        ax.set_xlim(-1, -0.8)
+    ax.set_xlabel(ax.get_xlabel(), fontsize=14, color='0.2')
+    ax.set_ylabel(ax.get_ylabel(), fontsize=14, color='0.2')
+    plt.tight_layout()
+    return f
 

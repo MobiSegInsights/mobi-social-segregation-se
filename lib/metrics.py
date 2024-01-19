@@ -1,4 +1,4 @@
-import os
+import os, sys
 from pathlib import Path
 import yaml
 import sqlalchemy
@@ -12,10 +12,14 @@ from p_tqdm import p_map
 import scipy.stats as stats
 import multiprocessing
 from statsmodels.stats.weightstats import DescrStatsW
-from lib import preprocess as preprocess
 
 
 ROOT_dir = Path(__file__).parent.parent
+sys.path.append(ROOT_dir)
+sys.path.insert(0, os.path.join(ROOT_dir, 'lib'))
+
+import preprocess as preprocess
+
 with open(os.path.join(ROOT_dir, 'dbs', 'keys.yaml')) as f:
     keys_manager = yaml.load(f, Loader=yaml.FullLoader)
 

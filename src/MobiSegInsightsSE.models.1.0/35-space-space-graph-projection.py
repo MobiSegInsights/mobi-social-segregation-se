@@ -185,7 +185,7 @@ class GraphGenerator:
 
 if __name__ == '__main__':
     gg = GraphGenerator()
-    resolution = 'poi'
+    resolution = 'hex'  # 'poi'
     if resolution == 'hex':
         gg.ice_hex_process()
         gg.hex_visitation_process()

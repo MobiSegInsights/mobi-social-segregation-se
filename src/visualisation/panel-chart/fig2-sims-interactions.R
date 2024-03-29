@@ -21,18 +21,17 @@ library(magick)
 options(scipen=10000)
 
 # ----- Simulation results -----
+rename_dict <- c(
+  D = "N",
+  N = "M"
+)
+
 df.sims <- as.data.frame(read_parquet('results/plot/seg_sims_plot.parquet'))
 df.plot <- df.sims
 df.plot$variable <- factor(df.plot$variable,
                            levels=c('ice_enh', 'ice_e1', 'ice_e2'),
                            labels=c('Empirical', 'No-homophily', 'Equalized mobility\n & no-homophily'))
-# df.plot$region <- factor(df.plot$region,
-#                            levels=c('Stockholm', 'Gothenburg', 'Malmo'),
-#                            labels=c('Stockholm', 'Gothenburg', 'Malmo'))
 set.seed(68)
-# df.plot <- rbind(rbind(sample_n(df.plot[df.plot$region == 'Stockholm',], 5000),
-#                  sample_n(df.plot[df.plot$region == 'Gothenburg',], 5000)),
-#                  sample_n(df.plot[df.plot$region == 'Malmo',], 5000))
 df.plot <- sample_n(df.plot, 5000)
 
 df.sims.stats <- df.sims %>%
@@ -43,6 +42,11 @@ df.sims.stats <- df.sims %>%
 df.sims.stats$variable <- factor(df.sims.stats$variable,
                            levels=c('ice_enh', 'ice_e1', 'ice_e2'),
                            labels=c('Empirical', 'No-homophily', 'Equalized mobility\n & no-homophily'))
+# Renaming the values
+df.plot <- df.plot %>%
+  mutate(grp_r = recode(grp_r, !!!rename_dict))
+df.sims.stats <- df.sims.stats %>%
+  mutate(grp_r = recode(grp_r, !!!rename_dict))
 
 g1 <- ggplot(data = df.plot,
              aes(x = value, weight = wt_p, y = variable, color=grp_r)) +
@@ -71,35 +75,50 @@ g1 <- ggplot(data = df.plot,
                 position = position_dodge(.7), size=1.3) +
 #  facet_grid(.~region) +
   xlim(c(-1, 1)) +
-  scale_fill_manual(name = 'Nativity group',
-                    breaks = c('F', 'D'),
+  scale_fill_manual(name = 'Residential nativity group',
+                    breaks = c('F', 'N'),
                     values = c('#601200', '#001260')) +
-  scale_color_manual(name = 'Nativity group', breaks = c('F', 'D'), values = c('#601200', '#001260')) +
+  scale_color_manual(name = 'Residential nativity group', breaks = c('F', 'N'), values = c('#601200', '#001260')) +
   labs(x = "Nativity segregation outside residential area", y = "") +
   theme(strip.background = element_blank(), legend.position = 'top')
 
 ggsave(filename = "figures/panels/fig2_b.png", plot=g1,
-       width = 7, height = 3.5, unit = "in", dpi = 300, bg = 'white')
+       width = 5, height = 3.5, unit = "in", dpi = 300, bg = 'white')
 
 # --- Group interactions ----
 df.inter <- as.data.frame(read_parquet('results/plot/group_interactions_plot_combined.parquet'))
+inter.rename_dict <- c(
+  DF = "NF",
+  NF = "MF",
+  DN = 'NM',
+  FN = "FM",
+  NN = "MM",
+  DD = "NN",
+  FD = "FN",
+  ND = "MN"
+)
+df.inter <- df.inter %>%
+  mutate(grp_r = recode(grp_r, !!!rename_dict)) %>%
+  mutate(inter_type = recode(inter_type, !!!inter.rename_dict))
+
+
 df.inter.stats <- df.inter %>%
   group_by(inter_type, Group, Source) %>%
   summarise(value_50 = wtd.quantile(value, weights=wt_p, probs = 0.5, na.rm = TRUE),
             value_25 = wtd.quantile(value, weights=wt_p, probs = 0.25, na.rm = TRUE),
             value_75 = wtd.quantile(value, weights=wt_p, probs = 0.75, na.rm = TRUE))
 
-inter_type.labs <- c(sprintf('D \u2192 D'), sprintf('N \u2192 N'), sprintf('F \u2192 F'),
-                     sprintf('D \u2192 F'), sprintf('F \u2192 D'),
-                     sprintf('N \u2192 D'), sprintf('D \u2192 N'), sprintf('F \u2192 N'), sprintf('N \u2192 F'))
+inter_type.labs <- c(sprintf('N \u2192 N'), sprintf('M \u2192 M'), sprintf('F \u2192 F'),
+                     sprintf('N \u2192 F'), sprintf('F \u2192 N'),
+                     sprintf('M \u2192 N'), sprintf('N \u2192 M'), sprintf('F \u2192 M'), sprintf('M \u2192 F'))
 df.inter.stats$inter_type <- factor(df.inter.stats$inter_type,
-                           levels=c('DD', 'NN', 'FF',
-                                    'DF', 'FD',
-                                    'ND', 'DN', 'FN', 'NF'),
+                           levels=c('NN', 'MM', 'FF',
+                                    'NF', 'FN',
+                                    'MN', 'NM', 'FM', 'MF'),
                            labels=inter_type.labs)
 df.inter.stats$Group <- factor(df.inter.stats$Group,
                                levels=c(1, 2, 3),
-                               labels=c('Within group', 'Between foreign-born and native-born',
+                               labels=c('Within group', 'Between foreign-born\n and native-born',
                                     'Others with mixed group'))
 df.inter.stats$Source <- factor(df.inter.stats$Source,
                                levels=c('Empirical', 'No-homophily', 'Equalized mobility & no-homophily'),
@@ -129,7 +148,7 @@ ggsave(filename = "figures/panels/seg_disp_fig2.png", plot=G,
 
 # --- Cleaner version of interactions ---
 df.inter.stats <- df.inter.stats %>%
-  filter((inter_type != sprintf('N \u2192 D')) & (inter_type != sprintf('N \u2192 F')))
+  filter((inter_type != sprintf('M \u2192 N')) & (inter_type != sprintf('M \u2192 F')))
 
 g3 <- ggplot(data = df.inter.stats,
              aes(y=Source, color=inter_type)) +
@@ -151,7 +170,7 @@ g3 <- ggplot(data = df.inter.stats,
 
 
 ggsave(filename = "figures/panels/fig2_d.png", plot=g3,
-       width = 9, height = 4, unit = "in", dpi = 300, bg = 'white')
+       width = 7, height = 4, unit = "in", dpi = 300, bg = 'white')
 
 # G <- ggarrange(g1, g3, ncol = 1, nrow = 2, labels = c('a', 'b'), heights = c(1, 1.5))
 # ggsave(filename = "figures/panels/seg_disp_fig2_r.png", plot=G,

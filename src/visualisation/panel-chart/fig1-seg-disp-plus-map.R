@@ -36,13 +36,16 @@ sea <- st_transform(sea, 4326)
 zones.seg <- merge(zones, df.deso, on='deso', how='inner')
 zones.seg <- st_transform(zones.seg, 4326)
 
+municipalities <- read_sf('dbs/municipalities/alla_kommuner/alla_kommuner.shp')[, c('ID', 'geometry')] %>%
+  filter(ID %in% c('0180', '1480', '1280'))
+
 # Stockholm
 bbox <- c(17.6799476147,59.1174841345,18.4572303295,59.475092515)
 names(bbox) <- c("left", "bottom", "right", "top")
 stockholm_basemap <- get_stadiamap(bbox, maptype="stamen_toner_lite", zoom = 12)
 
 # Gothenburg
-bbox <- c(11.81288,57.623515,12.163069,57.795916)
+bbox <- c(11.587818,57.534778,12.290261,57.879356)
 names(bbox) <- c("left", "bottom", "right", "top")
 gothenburg_basemap <- get_stadiamap(bbox, maptype="stamen_toner_lite", zoom = 12)
 
@@ -60,6 +63,8 @@ g1 <- ggmap(stockholm_basemap) +
   geom_sf(data = sea, fill='gray',
           color = NA, alpha=1, show.legend = F, inherit.aes = FALSE) +
   geom_point(aes(x = 18.063240, y = 59.334591), col="black", fill='black', size=4, shape="\u2605") +
+  geom_sf(data = municipalities[municipalities$ID == '0180',],
+          fill=NA, color = 'black', alpha=0.7, show.legend = F, inherit.aes = FALSE) +
   labs(title = 'Stockholm') +
   scale_fill_manual(values = rev(fake_scico),
                     breaks = c("(-1,-0.6]", "(-0.6,-0.4]", "(-0.4,-0.2]",
@@ -79,6 +84,8 @@ g2 <- ggmap(gothenburg_basemap) +
   geom_sf(data = sea, fill='gray',
           color = NA, alpha=1, show.legend = F, inherit.aes = FALSE) +
   geom_point(aes(x = 11.974560, y = 57.708870), col="black", fill='black', size=4, shape="\u2605") +
+  geom_sf(data = municipalities[municipalities$ID == '1480',],
+        fill=NA, color = 'black', alpha=0.7, show.legend = F, inherit.aes = FALSE) +
   labs(title = 'Gothenburg') +
   scale_fill_manual(values = rev(fake_scico),
                     breaks = c("(-1,-0.6]", "(-0.6,-0.4]", "(-0.4,-0.2]",
@@ -100,6 +107,8 @@ g3 <- ggmap(malmo_basemap) +
   geom_sf(data = sea, fill='gray',
           color = NA, alpha=1, show.legend = F, inherit.aes = FALSE) +
   geom_point(aes(x = 13.003822, y = 55.604980), col="black", fill='black', size=4, shape="\u2605") +
+  geom_sf(data = municipalities[municipalities$ID == '1280',],
+    fill=NA, color = 'black', alpha=0.7, show.legend = F, inherit.aes = FALSE) +
   labs(title = 'Malmo') +
   scale_fill_manual(values = rev(fake_scico),
                     breaks = c("(-1,-0.6]", "(-0.6,-0.4]", "(-0.4,-0.2]",
@@ -119,6 +128,8 @@ g4 <- ggmap(stockholm_basemap) +
   geom_sf(data = sea, fill='gray',
           color = NA, alpha=1, show.legend = F, inherit.aes = FALSE) +
   geom_point(aes(x = 18.063240, y = 59.334591), col="black", fill='black', size=4, shape="\u2605") +
+  geom_sf(data = municipalities[municipalities$ID == '0180',],
+        fill=NA, color = 'black', alpha=0.7, show.legend = F, inherit.aes = FALSE) +
   scale_fill_manual(values = rev(fake_scico)[2:5],
                     breaks = c("(-0.6,-0.4]", "(-0.4,-0.2]",
                                "(-0.2,0.2]", "(0.2,0.4]"),
@@ -137,6 +148,8 @@ g5 <- ggmap(gothenburg_basemap) +
   geom_sf(data = sea, fill='gray',
           color = NA, alpha=1, show.legend = F, inherit.aes = FALSE) +
   geom_point(aes(x = 11.974560, y = 57.708870), col="black", fill='black', size=4, shape="\u2605") +
+  geom_sf(data = municipalities[municipalities$ID == '1480',],
+      fill=NA, color = 'black', alpha=0.7, show.legend = F, inherit.aes = FALSE) +
   scale_fill_manual(values = rev(fake_scico)[2:5],
                     breaks = c("(-0.6,-0.4]", "(-0.4,-0.2]",
                                "(-0.2,0.2]", "(0.2,0.4]"),
@@ -155,6 +168,8 @@ g6 <- ggmap(malmo_basemap) +
   geom_sf(data = sea, fill='gray',
           color = NA, alpha=1, show.legend = F, inherit.aes = FALSE) +
   geom_point(aes(x = 13.003822, y = 55.604980), col="black", fill='black', size=4, shape="\u2605") +
+  geom_sf(data = municipalities[municipalities$ID == '1280',],
+      fill=NA, color = 'black', alpha=0.7, show.legend = F, inherit.aes = FALSE) +
   scale_fill_manual(values = rev(fake_scico)[2:5],
                     breaks = c("(-0.6,-0.4]", "(-0.4,-0.2]",
                                "(-0.2,0.2]", "(0.2,0.4]"),

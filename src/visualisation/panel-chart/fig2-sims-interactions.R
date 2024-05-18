@@ -17,6 +17,7 @@ library(scales)
 library(ggExtra)
 library(hrbrthemes)
 library(magick)
+library(boot)
 
 options(scipen=10000)
 
@@ -30,7 +31,7 @@ df.sims <- as.data.frame(read_parquet('results/plot/seg_sims_plot.parquet'))
 df.plot <- df.sims
 df.plot$variable <- factor(df.plot$variable,
                            levels=c('ice_enh', 'ice_e1', 'ice_e2'),
-                           labels=c('Empirical', 'No-homophily', 'Equalized mobility\n & no-homophily'))
+                           labels=c('Empirical', 'No-dest. preference', 'Equalized mobility\n & no-dest. preference'))
 set.seed(68)
 df.plot <- sample_n(df.plot, 5000)
 
@@ -41,7 +42,7 @@ df.sims.stats <- df.sims %>%
             value_75 = wtd.quantile(value, weights=wt_p, probs = 0.75, na.rm = TRUE))
 df.sims.stats$variable <- factor(df.sims.stats$variable,
                            levels=c('ice_enh', 'ice_e1', 'ice_e2'),
-                           labels=c('Empirical', 'No-homophily', 'Equalized mobility\n & no-homophily'))
+                           labels=c('Empirical', 'No-dest. preference', 'Equalized mobility\n & no-dest. preference'))
 # Renaming the values
 df.plot <- df.plot %>%
   mutate(grp_r = recode(grp_r, !!!rename_dict))
@@ -78,12 +79,12 @@ g1 <- ggplot(data = df.plot,
   scale_fill_manual(name = 'Residential nativity group',
                     breaks = c('F', 'N'),
                     values = c('#601200', '#001260')) +
-  scale_color_manual(name = 'Residential nativity group', breaks = c('F', 'N'), values = c('#601200', '#001260')) +
-  labs(x = "Nativity segregation outside residential area", y = "") +
+  scale_color_manual(name = 'Residential birth background group', breaks = c('F', 'N'), values = c('#601200', '#001260')) +
+  labs(x = "Segregation outside residential area", y = "") +
   theme(strip.background = element_blank(), legend.position = 'top')
 
 ggsave(filename = "figures/panels/fig2_b.png", plot=g1,
-       width = 5, height = 3.5, unit = "in", dpi = 300, bg = 'white')
+       width = 6, height = 3.5, unit = "in", dpi = 300, bg = 'white')
 
 # --- Group interactions ----
 df.inter <- as.data.frame(read_parquet('results/plot/group_interactions_plot_combined.parquet'))
@@ -122,7 +123,7 @@ df.inter.stats$Group <- factor(df.inter.stats$Group,
                                     'Others with mixed group'))
 df.inter.stats$Source <- factor(df.inter.stats$Source,
                                levels=c('Empirical', 'No-homophily', 'Equalized mobility & no-homophily'),
-                               labels=c('Empirical', 'No-homophily', 'Equalized mobility\n & no-homophily'))
+                               labels=c('Empirical', 'No-dest. preference', 'Equalized mobility\n & no-dest. preference'))
 
 g2 <- ggplot(data = df.inter.stats,
              aes(y=Source, color=inter_type)) +
@@ -167,7 +168,6 @@ g3 <- ggplot(data = df.inter.stats,
                                 '#666A7A', '#1A2866', '#66281A', '#7A6A66')) +
   labs(x = "Deviation from baseline exposure (%)", y = "") +
   theme(strip.background = element_blank())
-
 
 ggsave(filename = "figures/panels/fig2_d.png", plot=g3,
        width = 7, height = 4, unit = "in", dpi = 300, bg = 'white')
